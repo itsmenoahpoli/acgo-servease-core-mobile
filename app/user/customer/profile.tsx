@@ -1,0 +1,129 @@
+import { View, Text, ScrollView, Pressable } from 'react-native';
+import { useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { UserLayout } from '@/components/layouts/UserLayout';
+
+interface SettingsItemProps {
+	icon: string;
+	label: string;
+	value?: string;
+	onPress?: () => void;
+}
+
+function SettingsItem({ icon, label, value, onPress }: SettingsItemProps) {
+	return (
+		<Pressable
+			onPress={onPress}
+			className="flex-row items-center justify-between py-4 border-b border-gray-100"
+		>
+			<View className="flex-row items-center flex-1">
+				<View className="w-10 h-10 items-center justify-center mr-3">
+					<Ionicons name={icon as any} size={24} color="#374151" />
+				</View>
+				<Text className="text-base text-gray-900 flex-1">{label}</Text>
+			</View>
+			<View className="flex-row items-center">
+				{value && <Text className="text-sm text-gray-500 mr-2">{value}</Text>}
+				<Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
+			</View>
+		</Pressable>
+	);
+}
+
+export default function Profile() {
+	const router = useRouter();
+	const insets = useSafeAreaInsets();
+
+	const handleLogout = () => {
+		router.push('/auth/signin');
+	};
+
+	const handleEditProfile = () => {
+		console.log('Edit profile picture');
+	};
+
+	const handleBack = () => {
+		router.back();
+	};
+
+	return (
+		<UserLayout showHeader={false} showFooter={true}>
+			<View className="bg-white" style={{ paddingTop: insets.top }}>
+				<View className="flex-row items-center justify-between px-4 py-4">
+					<View className="flex-row items-center flex-1">
+						<Pressable onPress={handleBack} className="mr-3">
+							<Ionicons name="arrow-back" size={24} color="#111827" />
+						</Pressable>
+						<Text className="text-2xl font-bold text-gray-900">Profile</Text>
+					</View>
+					<Pressable onPress={handleLogout}>
+						<Text className="text-base text-primary font-medium">Logout</Text>
+					</Pressable>
+				</View>
+			</View>
+
+			<ScrollView className="flex-1 bg-white">
+				<View className="px-4 py-6">
+					<View className="items-center mb-6">
+						<View className="relative mb-4">
+							<View className="w-28 h-28 rounded-full bg-gray-200 items-center justify-center overflow-hidden">
+								<Ionicons name="person" size={56} color="#9CA3AF" />
+							</View>
+							<Pressable
+								onPress={handleEditProfile}
+								className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-blue-500 items-center justify-center border-2 border-white"
+							>
+								<Ionicons name="create-outline" size={14} color="white" />
+							</Pressable>
+						</View>
+						<Text className="text-2xl font-bold text-gray-900 mb-1">Ryan Sterling</Text>
+						<Text className="text-sm text-gray-600 mb-3">ID No: 1105486242</Text>
+						<View className="flex-row items-center bg-primary px-4 py-2 rounded-full">
+							<Ionicons name="checkmark-circle" size={18} color="white" />
+							<Text className="text-sm text-white font-semibold ml-2">Customer Account</Text>
+						</View>
+					</View>
+
+					<View className="mt-8">
+						<Text className="text-lg font-semibold text-gray-900 mb-2">Settings</Text>
+						<View className="bg-white rounded-lg">
+							<SettingsItem
+								icon="document-text-outline"
+								label="Transactions"
+								onPress={() => console.log('Invoices & Sanads')}
+							/>
+							<SettingsItem
+								icon="clipboard-outline"
+								label="Orders"
+								onPress={() => console.log('Fatwa')}
+							/>
+							<SettingsItem
+								icon="globe-outline"
+								label="Languages"
+								onPress={() => console.log('Languages')}
+							/>
+							<SettingsItem
+								icon="notifications-outline"
+								label="Notification"
+								onPress={() => console.log('Notification')}
+							/>
+							<SettingsItem
+								icon="sunny-outline"
+								label="Theme"
+								value="Light"
+								onPress={() => console.log('Theme')}
+							/>
+							<SettingsItem
+								icon="information-circle-outline"
+								label="Terms & Conditions"
+								onPress={() => router.push('/system/terms-conditions')}
+							/>
+						</View>
+					</View>
+				</View>
+			</ScrollView>
+		</UserLayout>
+	);
+}
+
