@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View, Text, TextInput, Pressable, Image } from 'react-native';
+import { View, Text, TextInput, Pressable, Image, Modal, ActivityIndicator, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useForm, Controller } from 'react-hook-form';
 import { BRAND_LOGO } from '@/assets';
@@ -14,6 +14,7 @@ interface SignInFormData {
 export default function SignIn() {
 	const router = useRouter();
 	const [showPassword, setShowPassword] = useState(false);
+	const [isLoading, setIsLoading] = useState(false);
 	const {
 		control,
 		handleSubmit,
@@ -27,11 +28,31 @@ export default function SignIn() {
 	});
 
 	const onSubmit = (data: SignInFormData) => {
-		console.log(data);
+		if (data.email === 'adrian@acgovirtualsolutions.com' && data.password === 'Acgo2026$$$') {
+			setIsLoading(true);
+			setTimeout(() => {
+				setIsLoading(false);
+				Alert.alert('Warning', 'Connection to server failed, please try again');
+			}, 3000);
+		} else {
+			console.log(data);
+		}
 	};
 
 	return (
 		<AuthLayout>
+			<Modal
+				visible={isLoading}
+				transparent={true}
+				animationType="fade"
+			>
+				<View className="flex-1 bg-black/50 items-center justify-center">
+					<View className="bg-white rounded-lg px-8 py-6 items-center">
+						<ActivityIndicator size="large" color="#000" />
+						<Text className="text-gray-800 text-base font-medium mt-4">Loading...</Text>
+					</View>
+				</View>
+			</Modal>
 			<View className="flex-1 justify-center py-8">
 				<View className="items-center mb-8">
 					<Image
