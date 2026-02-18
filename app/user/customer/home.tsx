@@ -39,7 +39,15 @@ export default function Home() {
 			<ScrollView
 				className="flex-1 bg-white"
 				showsVerticalScrollIndicator={false}
-				refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#7a0f1d" />}
+				refreshControl={
+					<RefreshControl
+						title="Pull down to refresh"
+						titleColor="#999"
+						refreshing={refreshing}
+						onRefresh={onRefresh}
+						tintColor="#7a0f1d"
+					/>
+				}
 			>
 				<View className="p-4">
 					<View className="mb-6">

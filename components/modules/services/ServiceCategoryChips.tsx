@@ -45,9 +45,9 @@ export function ServiceCategoryChips({ refreshKey = 0, onSelect }: ServiceCatego
 								style={{
 									width: 64,
 									height: 64,
-									borderRadius: 32,
+									borderRadius: 12,
 									backgroundColor: '#eee',
-									marginBottom: 8,
+									marginBottom: 4,
 								}}
 							/>
 							<Shimmer
@@ -74,7 +74,7 @@ export function ServiceCategoryChips({ refreshKey = 0, onSelect }: ServiceCatego
 					className="items-center mb-4"
 					style={{ width: `${100 / COLUMNS}%` }}
 				>
-					<View className="w-16 h-16 rounded-full bg-gray-100 items-center justify-center mb-2">
+					<View className="w-16 h-16 rounded-lg bg-gray-100 items-center justify-center mb-1">
 						<Ionicons name={PLACEHOLDER_ICON} size={28} color="#7a0f1d" />
 					</View>
 					<Text className="text-xs text-gray-700 text-center px-1">{category.name}</Text>

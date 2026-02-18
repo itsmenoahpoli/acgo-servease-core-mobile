@@ -8,11 +8,7 @@ interface HeaderNavProps {
 	onNotificationPress?: () => void;
 }
 
-export function HeaderNav({
-	title = 'Store',
-	onMenuPress,
-	onNotificationPress,
-}: HeaderNavProps) {
+export function HeaderNav({ title = 'Store', onMenuPress, onNotificationPress }: HeaderNavProps) {
 	const insets = useSafeAreaInsets();
 
 	const handleMenuPress = () => {
@@ -30,7 +26,7 @@ export function HeaderNav({
 	return (
 		<View className="bg-secondary" style={{ paddingTop: insets.top }}>
 			<View className="bg-secondary">
-				<View className="flex-row items-center justify-between px-4 py-3">
+				<View className="flex-row items-center justify-between px-4 pb-3">
 					<Pressable onPress={handleMenuPress} className="p-2">
 						<Ionicons name="menu-outline" size={24} color="white" />
 					</Pressable>
@@ -47,4 +43,3 @@ export function HeaderNav({
 		</View>
 	);
 }
-

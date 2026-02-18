@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
-import { View, ImageBackground, ScrollView } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { View, Text, ImageBackground, ScrollView } from 'react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { SPLASH_BG } from '@/assets';
 
@@ -10,6 +10,8 @@ interface AuthLayoutProps {
 }
 
 export function AuthLayout({ children, scrollable = true }: AuthLayoutProps) {
+	const insets = useSafeAreaInsets();
+
 	const content = (
 		<View className="flex-1 relative bg-[rgba(0,0,0,0.7)]">
 			<SafeAreaView className="flex-1">
@@ -25,6 +27,10 @@ export function AuthLayout({ children, scrollable = true }: AuthLayoutProps) {
 					<View className="flex-1 px-6">{children}</View>
 				)}
 			</SafeAreaView>
+
+			<Text className="text-white text-sm absolute right-5" style={{ top: insets.top }}>
+				v0.1.0.0-alpha
+			</Text>
 		</View>
 	);
 
@@ -37,4 +43,3 @@ export function AuthLayout({ children, scrollable = true }: AuthLayoutProps) {
 		</>
 	);
 }
-

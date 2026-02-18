@@ -12,7 +12,7 @@ export default function () {
 	useEffect(() => {
 		SplashScreen.hideAsync();
 		InteractionManager.runAfterInteractions(() => {
-			router.push('/user/customer/home');
+			router.push('/auth/signin-v2');
 		});
 	}, []);
 
