@@ -45,7 +45,7 @@ export default function ResetPassword() {
 						className="h-24 w-24 mb-4 rounded-2xl"
 					/>
 					<Text className="text-2xl text-white font-bold mb-2">Reset Password</Text>
-					<Text className="text-base text-white/80">Enter your new password</Text>
+					<Text className="text-base text-white/80">Enter your new desired password</Text>
 				</View>
 
 				<View className="mb-4">
@@ -65,12 +65,11 @@ export default function ResetPassword() {
 									value={value}
 									onChangeText={onChange}
 									onBlur={onBlur}
-									placeholder="Enter your new password"
-									placeholderTextColor="rgba(255, 255, 255, 0.5)"
+									placeholder="********"
 									secureTextEntry={!showPassword}
 									autoCapitalize="none"
 									autoComplete="password-new"
-									className={`bg-white/25 border rounded-lg px-4 py-3 text-white text-base pr-12 ${
+									className={`bg-white rounded-lg px-4 py-3 text-base h-14 ${
 										errors.password ? 'border-red-500' : 'border-white/40'
 									}`}
 								/>
@@ -81,14 +80,10 @@ export default function ResetPassword() {
 							onPress={() => setShowPassword(!showPassword)}
 							className="absolute right-3 top-0 bottom-0 justify-center"
 						>
-							<Text className="text-white/80 text-sm font-medium">
-								{showPassword ? 'Hide' : 'Show'}
-							</Text>
+							<Text className="text-white/80 text-sm font-medium">{showPassword ? 'Hide' : 'Show'}</Text>
 						</Pressable>
 					</View>
-					{errors.password && (
-						<Text className="text-red-400 text-xs mt-1">{errors.password.message}</Text>
-					)}
+					{errors.password && <Text className="text-red-400 text-xs mt-1">{errors.password.message}</Text>}
 				</View>
 
 				<View className="mb-6">
@@ -98,20 +93,18 @@ export default function ResetPassword() {
 							control={control}
 							rules={{
 								required: 'Please confirm your password',
-								validate: (value) =>
-									value === password || 'Passwords do not match',
+								validate: (value) => value === password || 'Passwords do not match',
 							}}
 							render={({ field: { onChange, onBlur, value } }) => (
 								<TextInput
 									value={value}
 									onChangeText={onChange}
 									onBlur={onBlur}
-									placeholder="Confirm your new password"
-									placeholderTextColor="rgba(255, 255, 255, 0.5)"
+									placeholder="********"
 									secureTextEntry={!showConfirmPassword}
 									autoCapitalize="none"
 									autoComplete="password-new"
-									className={`bg-white/25 border rounded-lg px-4 py-3 text-white text-base pr-12 ${
+									className={`bg-white rounded-lg px-4 py-3 text-base h-14 ${
 										errors.confirmPassword ? 'border-red-500' : 'border-white/40'
 									}`}
 								/>
@@ -122,15 +115,11 @@ export default function ResetPassword() {
 							onPress={() => setShowConfirmPassword(!showConfirmPassword)}
 							className="absolute right-3 top-0 bottom-0 justify-center"
 						>
-							<Text className="text-white/80 text-sm font-medium">
-								{showConfirmPassword ? 'Hide' : 'Show'}
-							</Text>
+							<Text className="text-white/80 text-sm font-medium">{showConfirmPassword ? 'Hide' : 'Show'}</Text>
 						</Pressable>
 					</View>
 					{errors.confirmPassword && (
-						<Text className="text-red-400 text-xs mt-1">
-							{errors.confirmPassword.message}
-						</Text>
+						<Text className="text-red-400 text-xs mt-1">{errors.confirmPassword.message}</Text>
 					)}
 				</View>
 
@@ -142,13 +131,12 @@ export default function ResetPassword() {
 				</Pressable>
 
 				<View className="flex-row items-center justify-center mt-6">
-					<Text className="text-white/80 text-sm">Remember your password? </Text>
+					<Text className="text-white/80 text-base">Remember your password? </Text>
 					<Pressable onPress={() => router.push('/auth/signin')}>
-						<Text className="text-white text-sm font-semibold">Sign In</Text>
+						<Text className="text-white text-base font-semibold">Sign In</Text>
 					</Pressable>
 				</View>
 			</View>
 		</AuthLayout>
 	);
 }
-

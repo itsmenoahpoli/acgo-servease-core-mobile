@@ -12,8 +12,9 @@ export default function () {
 	useEffect(() => {
 		SplashScreen.hideAsync();
 		InteractionManager.runAfterInteractions(() => {
-			router.push('/auth/signin-v2');
+			router.push('/user/customer/home');
 		});
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	return (

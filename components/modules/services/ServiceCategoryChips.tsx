@@ -1,41 +1,27 @@
-import { useEffect, useState } from 'react';
 import { Pressable, View, Text } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Shimmer, ShimmerProvider } from 'react-native-fast-shimmer';
 import { type ServiceCategory } from '@/types/service';
-import { serviceCategoriesService } from '@/services/service-categories.service';
 
 interface ServiceCategoryChipsProps {
-	refreshKey?: number;
+	categories: ServiceCategory[];
+	isLoading?: boolean;
 	onSelect: (category: ServiceCategory) => void;
 }
 
 const COLUMNS = 4;
 const SHIMMER_PLACEHOLDERS = 8;
 const PLACEHOLDER_ICON: keyof typeof Ionicons.glyphMap = 'pricetag-outline';
-const LOADING_DELAY_MS = 300;
 
-export function ServiceCategoryChips({ refreshKey = 0, onSelect }: ServiceCategoryChipsProps) {
-	const [categories, setCategories] = useState<ServiceCategory[]>([]);
-	const [loading, setLoading] = useState(true);
+function formatCategoryLabel(name: string): string {
+	const words = name.trim().split(/\s+/);
+	if (words.length < 3) return name;
+	const mid = Math.ceil(words.length / 2);
+	return words.slice(0, mid).join(' ') + '\n' + words.slice(mid).join(' ');
+}
 
-	const fetchCategories = async () => {
-		setLoading(true);
-		try {
-			const data = await serviceCategoriesService.fetchAll();
-			setCategories(data);
-		} catch {
-			setCategories([]);
-		} finally {
-			setTimeout(() => setLoading(false), LOADING_DELAY_MS);
-		}
-	};
-
-	useEffect(() => {
-		fetchCategories();
-	}, [refreshKey]);
-
-	if (loading) {
+export function ServiceCategoryChips({ categories, isLoading = false, onSelect }: ServiceCategoryChipsProps) {
+	if (isLoading) {
 		return (
 			<ShimmerProvider duration={1200}>
 				<View className="flex-row flex-wrap">
@@ -67,17 +53,17 @@ export function ServiceCategoryChips({ refreshKey = 0, onSelect }: ServiceCatego
 
 	return (
 		<View className="flex-row flex-wrap">
-			{categories.map((category) => (
+			{categories.slice(0, 8).map((category) => (
 				<Pressable
 					key={category.id}
 					onPress={() => onSelect(category)}
 					className="items-center mb-4"
 					style={{ width: `${100 / COLUMNS}%` }}
 				>
-					<View className="w-16 h-16 rounded-lg bg-gray-100 items-center justify-center mb-1">
+					<View className="w-20 h-20 rounded-lg bg-gray-100 items-center justify-center mb-1">
 						<Ionicons name={PLACEHOLDER_ICON} size={28} color="#7a0f1d" />
 					</View>
-					<Text className="text-xs text-gray-700 text-center px-1">{category.name}</Text>
+					<Text className="text-sm text-black text-center">{formatCategoryLabel(category.name)}</Text>
 				</Pressable>
 			))}
 		</View>
