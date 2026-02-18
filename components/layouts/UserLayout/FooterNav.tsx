@@ -1,5 +1,5 @@
 import { View, Pressable } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, usePathname } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
@@ -7,8 +7,26 @@ interface FooterNavProps {
 	showFooter?: boolean;
 }
 
+const NAV_ITEMS: { path: string; icon: keyof typeof Ionicons.glyphMap; iconActive: keyof typeof Ionicons.glyphMap }[] =
+	[
+		{ path: '/user/customer/home', icon: 'storefront-outline', iconActive: 'storefront' },
+		{ path: '/user/customer/cart', icon: 'cart-outline', iconActive: 'cart' },
+		{ path: '/user/customer/wishlist', icon: 'heart-outline', iconActive: 'heart' },
+		{ path: '/user/customer/profile', icon: 'person-outline', iconActive: 'person' },
+	];
+
+function isActive(pathname: string, itemPath: string): boolean {
+	if (itemPath === '/user/customer/home') {
+		return (
+			pathname === '/user/customer' || pathname === '/user/customer/home' || pathname.startsWith('/user/customer/home')
+		);
+	}
+	return pathname === itemPath || pathname.startsWith(itemPath + '/');
+}
+
 export function FooterNav({ showFooter = true }: FooterNavProps) {
 	const router = useRouter();
+	const pathname = usePathname();
 	const insets = useSafeAreaInsets();
 
 	if (!showFooter) {
@@ -17,24 +35,27 @@ export function FooterNav({ showFooter = true }: FooterNavProps) {
 
 	return (
 		<View className="bg-secondary border-t border-primary/20" style={{ paddingBottom: insets.bottom }}>
-			<View className="flex-row items-center justify-around p-4">
-				<Pressable className="items-center">
-					<Ionicons name="storefront-outline" size={20} color="white" />
-				</Pressable>
-				<Pressable className="items-center">
-					<Ionicons name="cart-outline" size={20} color="white" />
-				</Pressable>
-				<Pressable className="items-center">
-					<Ionicons name="heart-outline" size={20} color="white" />
-				</Pressable>
-				<Pressable
-					onPress={() => router.push('/user/customer/profile')}
-					className="items-center"
-				>
-					<Ionicons name="person-outline" size={24} color="white" />
-				</Pressable>
+			<View className="flex-row items-center justify-around px-4 py-2">
+				{NAV_ITEMS.map((item) => {
+					const active = isActive(pathname, item.path);
+					const iconSize = item.path.includes('profile') ? 24 : 20;
+					return (
+						<Pressable
+							key={item.path}
+							onPress={() => router.push(item.path as any)}
+							className="items-center justify-center"
+						>
+							<View className={`items-center justify-center rounded-full ${active ? 'w-12 h-12 bg-white' : ''}`}>
+								<Ionicons
+									name={active ? item.iconActive : item.icon}
+									size={iconSize}
+									color={active ? '#FF3B30' : 'white'}
+								/>
+							</View>
+						</Pressable>
+					);
+				})}
 			</View>
 		</View>
 	);
 }
-

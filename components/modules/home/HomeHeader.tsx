@@ -11,9 +11,9 @@ export function HomeHeader({ locationLabel, onProfilePress }: HomeHeaderProps) {
 		<View className="px-4 py-3">
 			<View className="flex-row items-center justify-between mb-3">
 				<Pressable className="flex-row items-center">
-					<Text className="text-white text-sm mr-1">Location</Text>
-					<Text className="text-white font-semibold mr-1">{locationLabel}</Text>
-					<Ionicons name="chevron-down" size={16} color="white" />
+					<Text className="text-sm text-white mr-1">Location:</Text>
+					<Text className="text-sm text-white font-semibold mr-1">{locationLabel}</Text>
+					<Ionicons name="chevron-down" size={12} color="white" />
 				</Pressable>
 				<Pressable onPress={onProfilePress}>
 					<View className="w-10 h-10 rounded-full bg-gray-300 items-center justify-center relative">
@@ -39,4 +39,3 @@ export function HomeHeader({ locationLabel, onProfilePress }: HomeHeaderProps) {
 		</View>
 	);
 }
-

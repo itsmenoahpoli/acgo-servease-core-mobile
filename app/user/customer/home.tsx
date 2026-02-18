@@ -1,4 +1,5 @@
-import { View, Text, ScrollView, Pressable } from 'react-native';
+import { useState, useCallback } from 'react';
+import { View, Text, ScrollView, RefreshControl } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { UserLayout } from '@/components/layouts/UserLayout';
@@ -6,12 +7,20 @@ import { HomeHeader } from '@/components/modules/home/HomeHeader';
 import { ServiceCategoryChips } from '@/components/modules/services/ServiceCategoryChips';
 import { ServiceHighlightCarousel } from '@/components/modules/services/ServiceHighlightCarousel';
 import { ServiceListCards } from '@/components/modules/services/ServiceListCards';
-import { serviceCategories, popularServices } from '@/data/services';
+import { popularServices } from '@/data/services';
 import { Service, ServiceCategory } from '@/types/service';
 
 export default function Home() {
 	const router = useRouter();
 	const insets = useSafeAreaInsets();
+	const [refreshing, setRefreshing] = useState(false);
+	const [refreshKey, setRefreshKey] = useState(0);
+
+	const onRefresh = useCallback(async () => {
+		setRefreshing(true);
+		setRefreshKey((k) => k + 1);
+		setRefreshing(false);
+	}, []);
 
 	const handleCategoryPress = (category: ServiceCategory) => {
 		console.log('Category selected:', category.name);
@@ -27,24 +36,22 @@ export default function Home() {
 				<HomeHeader locationLabel="Manila, Philippines" onProfilePress={() => router.push('/user/customer/profile')} />
 			</View>
 
-			<ScrollView className="flex-1 bg-white" showsVerticalScrollIndicator={false}>
-				<View className="px-4 py-4">
+			<ScrollView
+				className="flex-1 bg-white"
+				showsVerticalScrollIndicator={false}
+				refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#7a0f1d" />}
+			>
+				<View className="p-4">
 					<View className="mb-6">
-						<View className="flex-row items-center justify-between mb-3">
+						<View className="flex-row items-center justify-between mb-5">
 							<Text className="text-lg font-bold text-gray-900">Search by Categories</Text>
-							<Pressable>
-								<Text className="text-primary text-sm font-medium">Learn More</Text>
-							</Pressable>
 						</View>
-						<ServiceCategoryChips categories={serviceCategories} onSelect={handleCategoryPress} />
+						<ServiceCategoryChips refreshKey={refreshKey} onSelect={handleCategoryPress} />
 					</View>
 
-					<View className="mb-6">
+					{/* <View className="mb-6">
 						<View className="flex-row items-center justify-between mb-3">
 							<Text className="text-lg font-bold text-gray-900">Most Popular Services</Text>
-							<Pressable>
-								<Text className="text-primary text-sm font-medium">Learn More</Text>
-							</Pressable>
 						</View>
 						<ServiceHighlightCarousel
 							services={popularServices}
@@ -56,7 +63,7 @@ export default function Home() {
 					<View className="mb-6">
 						<Text className="text-lg font-bold text-gray-900 mb-3">All Services</Text>
 						<ServiceListCards services={popularServices} onSelect={navigateToService} />
-					</View>
+					</View> */}
 				</View>
 			</ScrollView>
 		</UserLayout>
