@@ -1,12 +1,13 @@
 import { useState, useCallback } from 'react';
-import { View, Text, ScrollView, RefreshControl, Pressable, Modal, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, RefreshControl, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useQueryClient } from '@tanstack/react-query';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Ionicons from '@expo/vector-icons/Ionicons';
 import { UserLayout } from '@/components/layouts/UserLayout';
 import { HomeHeader } from '@/components/modules/home/HomeHeader';
+import { CategoriesModal } from '@/components/modules/home/CategoriesModal';
 import { ServiceCategoryChips } from '@/components/modules/services/ServiceCategoryChips';
+import { ServicesNearYouList } from '@/components/modules/services/ServicesNearYouList';
 import { useServiceCategories, serviceCategoriesQueryKey } from '@/hooks/useServiceCategories';
 import { ServiceCategory } from '@/types/service';
 
@@ -68,59 +69,25 @@ export default function Home() {
 						/>
 					</View>
 
-					{/* <View className="mb-6">
-						<View className="flex-row items-center justify-between mb-3">
-							<Text className="text-lg font-bold text-gray-900">Most Popular Services</Text>
-						</View>
-						<ServiceHighlightCarousel
-							services={popularServices}
-							onSelect={navigateToService}
-							onBook={navigateToService}
-						/>
-					</View>
-
 					<View className="mb-6">
-						<Text className="text-lg font-bold text-gray-900 mb-3">All Services</Text>
-						<ServiceListCards services={popularServices} onSelect={navigateToService} />
-					</View> */}
+						<View className="flex-row items-center justify-between mb-5">
+							<Text className="text-lg font-semibold text-gray-900">Offered Services Near You</Text>
+							<Pressable onPress={() => {}}>
+								<Text className="text-sm text-primary">View More</Text>
+							</Pressable>
+						</View>
+						<ServicesNearYouList />
+					</View>
 				</View>
 			</ScrollView>
 
-			<Modal visible={viewAllCategoriesModalVisible} animationType="slide" statusBarTranslucent>
-				<View className="flex-1 bg-white" style={{ paddingTop: insets.top }}>
-					<View className="flex-row items-center justify-between px-4 py-3 border-b border-gray-200">
-						<View className="w-8" />
-						<Text className="flex-1 text-lg font-semibold text-gray-900 text-center">Categories</Text>
-						<Pressable
-							onPress={() => setViewAllCategoriesModalVisible(false)}
-							className="w-8 h-8 items-center justify-center"
-						>
-							<Ionicons name="close" size={24} color="#374151" />
-						</Pressable>
-					</View>
-					{isLoading && categories.length === 0 ? (
-						<View className="flex-1 items-center justify-center">
-							<ActivityIndicator size="large" color="#7a0f1d" />
-						</View>
-					) : (
-						<ScrollView className="flex-1" contentContainerStyle={{ padding: 16 }}>
-							{categories.map((category: ServiceCategory) => (
-								<Pressable
-									key={category.id}
-									onPress={() => {
-										handleCategoryPress(category);
-										setViewAllCategoriesModalVisible(false);
-									}}
-									className="py-4 border-b border-gray-100 flex-row items-center"
-								>
-									<Text className="text-base text-gray-900 flex-1">{category.name}</Text>
-									<Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
-								</Pressable>
-							))}
-						</ScrollView>
-					)}
-				</View>
-			</Modal>
+			<CategoriesModal
+				visible={viewAllCategoriesModalVisible}
+				onClose={() => setViewAllCategoriesModalVisible(false)}
+				categories={categories}
+				isLoading={isLoading}
+				onSelectCategory={handleCategoryPress}
+			/>
 		</UserLayout>
 	);
 }
