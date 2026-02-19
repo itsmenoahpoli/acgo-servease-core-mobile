@@ -1,11 +1,20 @@
-import { ScrollView, View } from 'react-native';
+import { ScrollView, View, Text, Pressable, Image } from 'react-native';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { Shimmer, ShimmerProvider } from 'react-native-fast-shimmer';
+import { Service, getServiceImageUrl } from '@/types/service';
+import { formatPriceAmount } from '@/utils/helpers.util';
 
-const CARD_WIDTH = 180;
+const CARD_WIDTH = 250;
 const IMAGE_HEIGHT = 160;
 const SHIMMER_PLACEHOLDERS = 5;
 
-export function ServicesNearYouList() {
+interface ServicesNearYouListProps {
+	services: Service[];
+	isLoading?: boolean;
+	onSelect?: (service: Service) => void;
+}
+
+function ShimmerPlaceholders() {
 	return (
 		<ShimmerProvider duration={1200}>
 			<ScrollView
@@ -47,5 +56,64 @@ export function ServicesNearYouList() {
 				))}
 			</ScrollView>
 		</ShimmerProvider>
+	);
+}
+
+export function ServicesNearYouList({ services, isLoading = false, onSelect }: ServicesNearYouListProps) {
+	if (isLoading) {
+		return <ShimmerPlaceholders />;
+	}
+
+	return (
+		<ScrollView
+			horizontal
+			showsHorizontalScrollIndicator={false}
+			contentContainerStyle={{ paddingRight: 16 }}
+			className="flex-row gap-5"
+		>
+			{services.map((service) => {
+				const imageUrl = getServiceImageUrl(service);
+				return (
+					<Pressable
+						key={service.id}
+						onPress={() => onSelect?.(service)}
+						style={{ width: CARD_WIDTH, marginRight: 24 }}
+						className="bg-white overflow-hidden"
+					>
+						<View className="h-40 bg-gray-100 items-center justify-center rounded-xl overflow-hidden">
+							{imageUrl ? (
+								<Image source={{ uri: imageUrl }} className="w-full h-full" resizeMode="cover" />
+							) : (
+								<Ionicons name="image-outline" size={40} color="#9CA3AF" />
+							)}
+						</View>
+						<View className="p-3">
+							<Text className="text-sm font-bold text-gray-900 mb-1" numberOfLines={2}>
+								{service.title}
+							</Text>
+							{service.category?.name ? (
+								<Text className="text-xs text-gray-500 mb-0.5" numberOfLines={1}>
+									{service.category.name}
+								</Text>
+							) : null}
+							<Text className="text-xs text-gray-600" numberOfLines={2}>
+								{service.description}
+							</Text>
+							<View className="flex-row items-center justify-between mt-2">
+								<Text className="text-sm font-semibold text-primary">
+									{formatPriceAmount(service.price) || service.price}
+								</Text>
+								{service.rating != null ? (
+									<View className="flex-row items-center">
+										<Ionicons name="star" size={12} color="#FBBF24" />
+										<Text className="text-xs text-gray-600 ml-0.5">{service.rating}</Text>
+									</View>
+								) : null}
+							</View>
+						</View>
+					</Pressable>
+				);
+			})}
+		</ScrollView>
 	);
 }

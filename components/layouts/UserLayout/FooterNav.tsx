@@ -35,7 +35,7 @@ export function FooterNav({ showFooter = true }: FooterNavProps) {
 
 	return (
 		<View className="bg-secondary border-t border-primary/20" style={{ paddingBottom: insets.bottom }}>
-			<View className="flex-row items-center justify-around px-4 py-2">
+			<View className="flex-row items-center justify-around px-4 py-3">
 				{NAV_ITEMS.map((item) => {
 					const active = isActive(pathname, item.path);
 					const iconSize = item.path.includes('profile') ? 24 : 20;

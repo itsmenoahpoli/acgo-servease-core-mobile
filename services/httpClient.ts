@@ -49,7 +49,7 @@ export interface HttpError extends Error {
 }
 
 const getAuthToken = (): string | null =>
-	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyYWRiYTNiOC0zZDE4LTRiMTYtYjM3MS0wMzU5YjZhNWY2YmEiLCJlbWFpbCI6ImN1c3RvbWVyQHNlcnZlYXNlLmNvbSIsImFjY291bnRUeXBlIjoiY3VzdG9tZXIiLCJhY2NvdW50U3RhdHVzIjoiQUNUSVZFIiwiaWF0IjoxNzcxMzkxMjgxLCJleHAiOjE3NzE0Nzc2ODF9.fDSwWdPqt1AodTYVxnVRoY8hBGpLYE1cXknvHIdN3zc';
+	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3MDdkMWFkZC1iZDJhLTQ0YmQtYTZmMS0zZDA3MDMxN2NmODUiLCJlbWFpbCI6ImN1c3RvbWVyQHNlcnZlYXNlLmNvbSIsImFjY291bnRUeXBlIjoiY3VzdG9tZXIiLCJhY2NvdW50U3RhdHVzIjoiQUNUSVZFIiwiaWF0IjoxNzcxNDkzMjk3LCJleHAiOjE3NzE1Nzk2OTd9.ND2X5ZfU8JEh96NuBZ7fZbDp3jR_3meg-BVCKkL1G_c';
 
 function createHttpError(message: string, status: number, data?: unknown): HttpError {
 	const err = new Error(String(message ?? 'Request failed')) as HttpError;
