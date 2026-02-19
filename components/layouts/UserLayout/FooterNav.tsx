@@ -11,7 +11,7 @@ const NAV_ITEMS: { path: string; icon: keyof typeof Ionicons.glyphMap; iconActiv
 	[
 		{ path: '/user/customer/home', icon: 'storefront-outline', iconActive: 'storefront' },
 		{ path: '/user/customer/cart', icon: 'cart-outline', iconActive: 'cart' },
-		{ path: '/user/customer/wishlist', icon: 'heart-outline', iconActive: 'heart' },
+		{ path: '/user/customer/favorites', icon: 'heart-outline', iconActive: 'heart' },
 		{ path: '/user/customer/profile', icon: 'person-outline', iconActive: 'person' },
 	];
 
@@ -39,19 +39,14 @@ export function FooterNav({ showFooter = true }: FooterNavProps) {
 				{NAV_ITEMS.map((item) => {
 					const active = isActive(pathname, item.path);
 					const iconSize = item.path.includes('profile') ? 24 : 20;
+
 					return (
 						<Pressable
 							key={item.path}
 							onPress={() => router.push(item.path as any)}
 							className="items-center justify-center"
 						>
-							<View className={`items-center justify-center rounded-full ${active ? 'w-12 h-12 bg-white' : ''}`}>
-								<Ionicons
-									name={active ? item.iconActive : item.icon}
-									size={iconSize}
-									color={active ? '#FF3B30' : 'white'}
-								/>
-							</View>
+							<Ionicons name={active ? item.iconActive : item.icon} size={iconSize} color="white" />
 						</Pressable>
 					);
 				})}

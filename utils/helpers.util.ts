@@ -13,10 +13,10 @@ export const formatPriceAmount = (value: number | string | null | undefined, dec
 	if (value === null || value === undefined || value === '') return '';
 	const num = typeof value === 'string' ? parseFloat(value.replace(/[^0-9.-]/g, '')) : Number(value);
 	if (Number.isNaN(num)) return '';
-	return num.toLocaleString('en-US', {
+	return `₱ ${num.toLocaleString('en-US', {
 		minimumFractionDigits: decimalPlaces,
 		maximumFractionDigits: decimalPlaces,
-	});
+	})}`;
 };
 
 export const formatPhoneNumber = (value: string) => {
@@ -42,4 +42,3 @@ export const formatPhoneNumber = (value: string) => {
 	}
 	return '';
 };
-

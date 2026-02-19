@@ -10,12 +10,14 @@ export interface ServiceCategoryRef {
 /** Provider ref embedded in a service response */
 export interface ServiceProviderRef {
 	id: string;
+	email?: string;
+	userUid?: string;
 	name: string;
 	firstName?: string;
 	lastName?: string;
-	email?: string;
 	phoneNumber?: string;
 	address?: string;
+	password?: string;
 	accountType?: string;
 	accountStatus?: string;
 	roleId?: string;
@@ -34,12 +36,12 @@ export interface ServiceImage {
 export interface Service {
 	id: string;
 	title: string;
-	description: string;
 	categoryId: string;
 	category: ServiceCategoryRef;
 	providerId: string;
 	provider: ServiceProviderRef;
 	price: string;
+	description: string;
 	experienceLevel?: string;
 	bannerUrl?: string;
 	images?: ServiceImage[];
@@ -47,6 +49,7 @@ export interface Service {
 	isFeatured?: boolean;
 	createdAt?: string;
 	updatedAt?: string;
+	/** Optional fields that may be returned or used by the app */
 	rating?: number;
 	reviews?: number;
 	serviceIncludes?: string[];
@@ -63,13 +66,13 @@ export interface ServiceCategory {
 	updatedAt?: string;
 }
 
-export type ProviderType = 'Company Provider' | 'Independent Provider';
+export type ProviderType = 'Business' | 'Freelancer';
 
 /** Derive display provider type from provider.accountType */
 export function getServiceProviderType(service: Service): ProviderType | string {
 	const type = service.provider?.accountType ?? '';
-	if (type.includes('business')) return 'Company Provider';
-	if (type.includes('independent')) return 'Independent Provider';
+	if (type.includes('business')) return 'Business';
+	if (type.includes('independent')) return 'Freelancer';
 	return type || 'Provider';
 }
 

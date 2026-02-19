@@ -1,6 +1,5 @@
 import { View, Text, ScrollView, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { UserLayout } from '@/components/layouts/UserLayout';
 
@@ -13,10 +12,7 @@ interface SettingsItemProps {
 
 function SettingsItem({ icon, label, value, onPress }: SettingsItemProps) {
 	return (
-		<Pressable
-			onPress={onPress}
-			className="flex-row items-center justify-between py-4 border-b border-gray-100"
-		>
+		<Pressable onPress={onPress} className="flex-row items-center justify-between py-4 border-b border-gray-100">
 			<View className="flex-row items-center flex-1">
 				<View className="w-10 h-10 items-center justify-center mr-3">
 					<Ionicons name={icon as any} size={24} color="#374151" />
@@ -33,28 +29,15 @@ function SettingsItem({ icon, label, value, onPress }: SettingsItemProps) {
 
 export default function Profile() {
 	const router = useRouter();
-	const insets = useSafeAreaInsets();
 
-	const handleLogout = () => {
-		router.push('/auth/signin');
-	};
-
-	const handleEditProfile = () => {
-		console.log('Edit profile picture');
-	};
-
-	const handleBack = () => {
-		router.back();
-	};
+	const handleLogout = () => router.push('/auth/signin');
+	const handleEditProfile = () => console.log('Edit profile picture');
 
 	return (
-		<UserLayout showHeader={false} showFooter={true}>
-			<View className="bg-white" style={{ paddingTop: insets.top }}>
+		<UserLayout showHeader={false} showFooter={false}>
+			<View className="bg-white">
 				<View className="flex-row items-center justify-between px-4 py-4">
 					<View className="flex-row items-center flex-1">
-						<Pressable onPress={handleBack} className="mr-3">
-							<Ionicons name="arrow-back" size={24} color="#111827" />
-						</Pressable>
 						<Text className="text-2xl font-bold text-gray-900">Profile</Text>
 					</View>
 					<Pressable onPress={handleLogout}>
@@ -88,32 +71,11 @@ export default function Profile() {
 					<View className="mt-8">
 						<Text className="text-lg font-semibold text-gray-900 mb-2">Settings</Text>
 						<View className="bg-white rounded-lg">
-							<SettingsItem
-								icon="document-text-outline"
-								label="Transactions"
-								onPress={() => console.log('Invoices & Sanads')}
-							/>
-							<SettingsItem
-								icon="clipboard-outline"
-								label="Orders"
-								onPress={() => console.log('Fatwa')}
-							/>
-							<SettingsItem
-								icon="globe-outline"
-								label="Languages"
-								onPress={() => console.log('Languages')}
-							/>
-							<SettingsItem
-								icon="notifications-outline"
-								label="Notification"
-								onPress={() => console.log('Notification')}
-							/>
-							<SettingsItem
-								icon="sunny-outline"
-								label="Theme"
-								value="Light"
-								onPress={() => console.log('Theme')}
-							/>
+							<SettingsItem icon="document-text-outline" label="Transactions" onPress={() => {}} />
+							<SettingsItem icon="clipboard-outline" label="Orders" onPress={() => {}} />
+							<SettingsItem icon="globe-outline" label="Languages" onPress={() => {}} />
+							<SettingsItem icon="notifications-outline" label="Notification" onPress={() => {}} />
+							<SettingsItem icon="sunny-outline" label="Theme" value="Light" onPress={() => {}} />
 							<SettingsItem
 								icon="information-circle-outline"
 								label="Terms & Conditions"
@@ -126,4 +88,3 @@ export default function Profile() {
 		</UserLayout>
 	);
 }
-

@@ -1,4 +1,5 @@
 import { ScrollView, View, Text, Pressable, Image } from 'react-native';
+import { useRouter } from 'expo-router';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Shimmer, ShimmerProvider } from 'react-native-fast-shimmer';
 import { Service, getServiceImageUrl } from '@/types/service';
@@ -11,7 +12,6 @@ const SHIMMER_PLACEHOLDERS = 5;
 interface ServicesNearYouListProps {
 	services: Service[];
 	isLoading?: boolean;
-	onSelect?: (service: Service) => void;
 }
 
 function ShimmerPlaceholders() {
@@ -59,10 +59,16 @@ function ShimmerPlaceholders() {
 	);
 }
 
-export function ServicesNearYouList({ services, isLoading = false, onSelect }: ServicesNearYouListProps) {
+export function ServicesNearYouList({ services, isLoading = false }: ServicesNearYouListProps) {
+	const router = useRouter();
+
 	if (isLoading) {
 		return <ShimmerPlaceholders />;
 	}
+
+	const onSelect = (service: Service) => {
+		router.push(`/user/customer/service/${service.id}`);
+	};
 
 	return (
 		<ScrollView

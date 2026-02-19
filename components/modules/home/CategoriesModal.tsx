@@ -17,7 +17,7 @@ export function CategoriesModal({ visible, onClose, categories, isLoading, onSel
 
 	return (
 		<>
-			<StatusBar style="dark" />
+			{visible && <StatusBar style="dark" />}
 			<Modal visible={visible} animationType="slide" statusBarTranslucent>
 				<View className="flex-1 bg-white" style={{ paddingTop: insets.top }}>
 					<View className="flex-row items-center justify-between px-4 py-3 border-b border-gray-200">

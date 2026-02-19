@@ -2,7 +2,6 @@ import { useState, useCallback } from 'react';
 import { View, Text, ScrollView, RefreshControl, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useQueryClient } from '@tanstack/react-query';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { UserLayout } from '@/components/layouts/UserLayout';
 import { HomeHeader } from '@/components/modules/home/HomeHeader';
 import { CategoriesModal } from '@/components/modules/home/CategoriesModal';
@@ -10,11 +9,10 @@ import { ServiceCategoryChips } from '@/components/modules/services/ServiceCateg
 import { ServicesNearYouList } from '@/components/modules/services/ServicesNearYouList';
 import { useServiceCategories, serviceCategoriesQueryKey } from '@/hooks/useServiceCategories';
 import { useCustomerServices, customerServicesQueryKey } from '@/hooks/useCustomerServices';
-import { ServiceCategory, Service } from '@/types/service';
+import { ServiceCategory } from '@/types/service';
 
 export default function Home() {
 	const router = useRouter();
-	const insets = useSafeAreaInsets();
 	const queryClient = useQueryClient();
 	const [refreshing, setRefreshing] = useState(false);
 	const [viewAllCategoriesModalVisible, setViewAllCategoriesModalVisible] = useState(false);
@@ -30,23 +28,16 @@ export default function Home() {
 			queryClient.invalidateQueries({ queryKey: serviceCategoriesQueryKey }),
 			queryClient.invalidateQueries({ queryKey: customerServicesQueryKey }),
 		]);
-
-		setTimeout(() => {
-			setRefreshing(false);
-		}, 300);
+		setTimeout(() => setRefreshing(false), 300);
 	}, [queryClient]);
 
 	const handleCategoryPress = (category: ServiceCategory) => {
 		console.log('Category selected:', category.name);
 	};
 
-	const handleServicePress = (service: Service) => {
-		router.push({ pathname: '/user/customer/service/[id]', params: { id: service.id } });
-	};
-
 	return (
-		<UserLayout title="SERVICES MARKETPLACE" showHeader={false} showFooter={true} statusBarStyle="light">
-			<View className="bg-secondary" style={{ paddingTop: insets.top }}>
+		<UserLayout title="SERVICES MARKETPLACE" showHeader={false} showFooter={false}>
+			<View className="bg-secondary">
 				<HomeHeader locationLabel="Manila, Philippines" onProfilePress={() => router.push('/user/customer/profile')} />
 			</View>
 
@@ -86,11 +77,7 @@ export default function Home() {
 									<Text className="text-sm text-primary">View More</Text>
 								</Pressable>
 							</View>
-							<ServicesNearYouList
-								services={servicesNearYou}
-								isLoading={servicesNearYouLoading}
-								onSelect={handleServicePress}
-							/>
+							<ServicesNearYouList services={servicesNearYou} isLoading={servicesNearYouLoading} />
 						</View>
 
 						<View>
@@ -100,11 +87,7 @@ export default function Home() {
 									<Text className="text-sm text-primary">View More</Text>
 								</Pressable>
 							</View>
-							<ServicesNearYouList
-								services={servicesNearYou}
-								isLoading={servicesNearYouLoading}
-								onSelect={handleServicePress}
-							/>
+							<ServicesNearYouList services={servicesNearYou} isLoading={servicesNearYouLoading} />
 						</View>
 					</View>
 				</View>
