@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { View, Text, ScrollView, Pressable, useWindowDimensions, Image } from 'react-native';
+import { View, Text, ScrollView, Pressable, useWindowDimensions, Image, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -42,7 +42,8 @@ export default function ServiceDetail() {
 		};
 	}, [id]);
 
-	if (!service) return null;
+	if (loading) return <ActivityIndicator size="large" color="#7a0f1d" />;
+	if (!service) return <Text>Failed to load service detail.</Text>;
 
 	const imageUrl = getServiceImageUrl(service);
 	const providerType = getServiceProviderType(service);
