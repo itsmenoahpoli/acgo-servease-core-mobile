@@ -8,7 +8,6 @@ import { UserLayout } from '@/components/layouts/UserLayout';
 import { getServiceImageUrl, getServiceProviderType } from '@/types/service';
 import type { Service } from '@/types/service';
 import { formatPriceAmount } from '@/utils/helpers.util';
-import { ServiceCard } from '@/components/modules/services/ServiceListCards';
 
 export default function ServiceDetail() {
 	const router = useRouter();
@@ -34,9 +33,7 @@ export default function ServiceDetail() {
 		return (
 			<UserLayout showHeader={false} showFooter={false}>
 				<View className="flex-1 items-center justify-center px-4">
-					<Text className="text-lg font-semibold text-gray-900 mb-4">
-						{parseError ?? 'Service not found'}
-					</Text>
+					<Text className="text-lg font-semibold text-gray-900 mb-4">{parseError ?? 'Service not found'}</Text>
 					<Pressable onPress={() => router.back()} className="px-6 py-3 bg-secondary rounded-lg">
 						<Text className="text-white font-semibold">Go Back</Text>
 					</Pressable>
@@ -47,7 +44,7 @@ export default function ServiceDetail() {
 
 	const imageUrl = getServiceImageUrl(service);
 	const providerType = getServiceProviderType(service);
-	const isCompany = providerType === 'Company Provider';
+	const isCompany = providerType === 'Business';
 	const serviceIncludes = service.serviceIncludes ?? [];
 	const about = service.about ?? '';
 
@@ -72,32 +69,54 @@ export default function ServiceDetail() {
 						</Pressable>
 					</View>
 
-					<View className="-mt-8 px-4">
-						<ServiceCard service={service} onSelect={() => {}} />
-
-						{serviceIncludes.length > 0 || about ? (
-							<View className="bg-white rounded-3xl px-5 pt-6 pb-0 border border-gray-100 mt-3">
-								{serviceIncludes.length > 0 && (
+					<View className="px-5 pt-6 pb-32 -mt-6 bg-white rounded-t-3xl border-t border-gray-100">
+						<Text className="text-2xl font-bold text-gray-900 mb-1">{service.title}</Text>
+						{(service.rating != null || service.reviews != null) && (
+							<View className="flex-row items-center mb-3">
+								{service.rating != null && (
 									<>
-										<Text className="text-xs uppercase text-gray-500 mb-2">Service Included</Text>
-										<View className="flex-row flex-wrap gap-2 mb-4">
-											{serviceIncludes.map((item) => (
-												<View key={item} className="px-4 py-2 bg-gray-100 rounded-full">
-													<Text className="text-xs font-semibold text-gray-700">{item}</Text>
-												</View>
-											))}
-										</View>
+										<Ionicons name="star" size={16} color="#FBBF24" />
+										<Text className="text-sm text-gray-600 mx-2">
+											{Number(service.rating).toFixed(1)} Ratings
+										</Text>
 									</>
 								)}
+								{service.reviews != null && (
+									<Text className="text-sm text-gray-400">
+										{service.rating != null ? ' • ' : ''}
+										{Number(service.reviews).toLocaleString()} Reviews
+									</Text>
+								)}
+							</View>
+						)}
+						<View className="flex-row items-center mb-4 flex-wrap">
+							<Ionicons name="briefcase-outline" size={18} color="#6B7280" />
+							<Text className="text-sm text-gray-600 ml-2">{service.provider?.name ?? '—'}</Text>
+							<View className={`ml-2 px-3 py-0.5 rounded-full ${isCompany ? 'bg-secondary/10' : 'bg-blue-50'}`}>
+								<Text className={`text-[10px] font-semibold ${isCompany ? 'text-secondary' : 'text-blue-700'}`}>
+									{providerType}
+								</Text>
+							</View>
+						</View>
+						<Text className="text-base text-gray-600 mb-5">{service.description}</Text>
 
-								{about ? (
-									<>
-										<Text className="text-xs uppercase text-gray-500 mb-2">About</Text>
-										<Text className="text-sm text-gray-700 leading-relaxed mb-6">{about}</Text>
-									</>
-								) : null}
+						{serviceIncludes.length > 0 && (
+							<View className="mb-5">
+								<Text className="text-xs uppercase text-gray-500 mb-2">Service Included</Text>
+								<View className="flex-row flex-wrap gap-2">
+									{serviceIncludes.map((item) => (
+										<View key={item} className="px-4 py-2 bg-gray-100 rounded-full">
+											<Text className="text-xs font-semibold text-gray-700">{item}</Text>
+										</View>
+									))}
+								</View>
+							</View>
+						)}
 
-								<View className="pb-32" />
+						{about ? (
+							<View className="mb-2">
+								<Text className="text-xs uppercase text-gray-500 mb-2">About</Text>
+								<Text className="text-sm text-gray-700 leading-relaxed">{about}</Text>
 							</View>
 						) : null}
 					</View>

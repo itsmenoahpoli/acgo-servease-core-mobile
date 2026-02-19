@@ -9,11 +9,14 @@ import { ServiceCategoryChips } from '@/components/modules/services/ServiceCateg
 import { ServicesNearYouList } from '@/components/modules/services/ServicesNearYouList';
 import { ServiceProvidersList } from '@/components/modules/services/ServiceProvidersList';
 import { ServiceProvidersModal } from '@/components/modules/services/ServiceProvidersModal';
+import { ServicesModal } from '@/components/modules/services/ServicesModal';
 import { useServiceCategories, serviceCategoriesQueryKey } from '@/hooks/useServiceCategories';
 import { useCustomerServices, customerServicesQueryKey } from '@/hooks/useCustomerServices';
 import { useCustomerServiceProviders, customerServiceProvidersQueryKey } from '@/hooks/useCustomerServiceProviders';
 import { customerServiceProvidersService } from '@/services/customer-service-providers.service';
+import { customerServicesService } from '@/services/customer-services.service';
 import { ServiceCategory } from '@/types/service';
+import type { Service } from '@/types/service';
 
 export default function Home() {
 	const router = useRouter();
@@ -21,6 +24,7 @@ export default function Home() {
 	const [refreshing, setRefreshing] = useState(false);
 	const [viewAllCategoriesModalVisible, setViewAllCategoriesModalVisible] = useState(false);
 	const [viewMoreProvidersModalVisible, setViewMoreProvidersModalVisible] = useState(false);
+	const [viewMoreServicesModalVisible, setViewMoreServicesModalVisible] = useState(false);
 
 	const { data: categories = [], isLoading: categoriesLoading } = useServiceCategories();
 	const { data: servicesNearYou = [], isLoading: servicesNearYouLoading } = useCustomerServices({ limit: 10 });
@@ -29,6 +33,11 @@ export default function Home() {
 		queryKey: [...customerServiceProvidersQueryKey, 'modal', 50],
 		queryFn: () => customerServiceProvidersService.fetchAll({ limit: 50 }),
 		enabled: viewMoreProvidersModalVisible,
+	});
+	const { data: modalServices = [], isLoading: modalServicesLoading } = useQuery({
+		queryKey: [...customerServicesQueryKey, 'modal', 50],
+		queryFn: () => customerServicesService.fetchAll({ limit: 50 }),
+		enabled: viewMoreServicesModalVisible,
 	});
 
 	const isLoading = categoriesLoading;
@@ -45,6 +54,13 @@ export default function Home() {
 
 	const handleCategoryPress = (category: ServiceCategory) => {
 		console.log('Category selected:', category.name);
+	};
+
+	const handleSelectService = (service: Service) => {
+		router.push({
+			pathname: '/user/customer/service/[id]',
+			params: { id: service.id, service: JSON.stringify(service) },
+		});
 	};
 
 	return (
@@ -85,7 +101,7 @@ export default function Home() {
 						<View>
 							<View className="flex-row items-center justify-between mb-5">
 								<Text className="text-xl font-semibold text-gray-900">Offered Services Near You</Text>
-								<Pressable onPress={() => {}}>
+								<Pressable onPress={() => setViewMoreServicesModalVisible(true)}>
 									<Text className="text-sm text-primary">View More</Text>
 								</Pressable>
 							</View>
@@ -120,6 +136,13 @@ export default function Home() {
 				onClose={() => setViewMoreProvidersModalVisible(false)}
 				providers={modalProviders}
 				isLoading={modalProvidersLoading}
+			/>
+			<ServicesModal
+				visible={viewMoreServicesModalVisible}
+				onClose={() => setViewMoreServicesModalVisible(false)}
+				services={modalServices}
+				isLoading={modalServicesLoading}
+				onSelectService={handleSelectService}
 			/>
 		</UserLayout>
 	);

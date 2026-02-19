@@ -11,34 +11,29 @@ interface ServiceCardProps {
 export function ServiceCard({ service, onSelect }: ServiceCardProps) {
 	const imageUrl = getServiceImageUrl(service);
 	const providerType = getServiceProviderType(service);
-	const isCompany = providerType === 'Company Provider';
+	const isCompany = providerType === 'Business';
 
 	return (
-		<Pressable
-			key={service.id}
-			onPress={() => onSelect(service)}
-			className="bg-white rounded-xl border border-gray-200 mb-3 overflow-hidden"
-		>
+		<Pressable key={service.id} onPress={() => onSelect(service)} className="bg-white rounded-xl mb-6 overflow-hidden">
 			<View className="flex-row">
-				<View className="w-32 h-32 bg-gray-200 items-center justify-center overflow-hidden">
+				<View className="w-36 self-stretch bg-gray-200 overflow-hidden min-h-[80]" style={{ alignSelf: 'stretch' }}>
 					{imageUrl ? (
-						<Image source={{ uri: imageUrl }} className="w-full h-full" resizeMode="cover" />
+						<Image
+							source={{ uri: imageUrl }}
+							className="w-full h-full"
+							style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
+							resizeMode="cover"
+						/>
 					) : (
-						<Ionicons name="image-outline" size={32} color="#9CA3AF" />
+						<View className="flex-1 items-center justify-center min-h-[80]">
+							<Ionicons name="image-outline" size={32} color="#9CA3AF" />
+						</View>
 					)}
 				</View>
 				<View className="flex-1 p-3">
 					<Text className="text-base font-bold text-gray-900 mb-1">{service.title}</Text>
-					<View
-						className={`self-start px-3 py-1 rounded-full mb-2 ${
-							isCompany ? 'bg-secondary/10' : 'bg-blue-50'
-						}`}
-					>
-						<Text
-							className={`text-[10px] font-semibold ${
-								isCompany ? 'text-secondary' : 'text-blue-700'
-							}`}
-						>
+					<View className={`self-start px-3 py-1 rounded-full mb-2 ${isCompany ? 'bg-primary/10' : 'bg-blue-50'}`}>
+						<Text className={`text-[10px] font-semibold ${isCompany ? 'text-secondary' : 'text-blue-700'}`}>
 							{providerType}
 						</Text>
 					</View>
@@ -67,4 +62,3 @@ export function ServiceCard({ service, onSelect }: ServiceCardProps) {
 		</Pressable>
 	);
 }
-
