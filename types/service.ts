@@ -23,6 +23,7 @@ export interface ServiceProviderRef {
 	roleId?: string;
 	createdAt?: string;
 	updatedAt?: string;
+	rating?: number;
 }
 
 export interface ServiceImage {
@@ -71,6 +72,14 @@ export type ProviderType = 'Business' | 'Freelancer';
 /** Derive display provider type from provider.accountType */
 export function getServiceProviderType(service: Service): ProviderType | string {
 	const type = service.provider?.accountType ?? '';
+	if (type.includes('business')) return 'Business';
+	if (type.includes('independent')) return 'Freelancer';
+	return type || 'Provider';
+}
+
+/** Display label for a provider's accountType (used in provider list) */
+export function getProviderTypeLabel(provider: ServiceProviderRef): ProviderType | string {
+	const type = provider?.accountType ?? '';
 	if (type.includes('business')) return 'Business';
 	if (type.includes('independent')) return 'Freelancer';
 	return type || 'Provider';

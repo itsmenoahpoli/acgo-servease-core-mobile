@@ -1,14 +1,18 @@
 import { useState, useCallback } from 'react';
 import { View, Text, ScrollView, RefreshControl, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { UserLayout } from '@/components/layouts/UserLayout';
 import { HomeHeader } from '@/components/modules/home/HomeHeader';
 import { CategoriesModal } from '@/components/modules/home/CategoriesModal';
 import { ServiceCategoryChips } from '@/components/modules/services/ServiceCategoryChips';
 import { ServicesNearYouList } from '@/components/modules/services/ServicesNearYouList';
+import { ServiceProvidersList } from '@/components/modules/services/ServiceProvidersList';
+import { ServiceProvidersModal } from '@/components/modules/services/ServiceProvidersModal';
 import { useServiceCategories, serviceCategoriesQueryKey } from '@/hooks/useServiceCategories';
 import { useCustomerServices, customerServicesQueryKey } from '@/hooks/useCustomerServices';
+import { useCustomerServiceProviders, customerServiceProvidersQueryKey } from '@/hooks/useCustomerServiceProviders';
+import { customerServiceProvidersService } from '@/services/customer-service-providers.service';
 import { ServiceCategory } from '@/types/service';
 
 export default function Home() {
@@ -16,9 +20,16 @@ export default function Home() {
 	const queryClient = useQueryClient();
 	const [refreshing, setRefreshing] = useState(false);
 	const [viewAllCategoriesModalVisible, setViewAllCategoriesModalVisible] = useState(false);
+	const [viewMoreProvidersModalVisible, setViewMoreProvidersModalVisible] = useState(false);
 
 	const { data: categories = [], isLoading: categoriesLoading } = useServiceCategories();
 	const { data: servicesNearYou = [], isLoading: servicesNearYouLoading } = useCustomerServices({ limit: 10 });
+	const { data: serviceProviders = [], isLoading: serviceProvidersLoading } = useCustomerServiceProviders();
+	const { data: modalProviders = [], isLoading: modalProvidersLoading } = useQuery({
+		queryKey: [...customerServiceProvidersQueryKey, 'modal', 50],
+		queryFn: () => customerServiceProvidersService.fetchAll({ limit: 50 }),
+		enabled: viewMoreProvidersModalVisible,
+	});
 
 	const isLoading = categoriesLoading;
 
@@ -27,6 +38,7 @@ export default function Home() {
 		await Promise.all([
 			queryClient.invalidateQueries({ queryKey: serviceCategoriesQueryKey }),
 			queryClient.invalidateQueries({ queryKey: customerServicesQueryKey }),
+			queryClient.invalidateQueries({ queryKey: customerServiceProvidersQueryKey }),
 		]);
 		setTimeout(() => setRefreshing(false), 300);
 	}, [queryClient]);
@@ -83,11 +95,14 @@ export default function Home() {
 						<View>
 							<View className="flex-row items-center justify-between mb-5">
 								<Text className="text-xl font-semibold text-gray-900">Top Service Providers</Text>
-								<Pressable onPress={() => {}}>
+								<Pressable onPress={() => setViewMoreProvidersModalVisible(true)}>
 									<Text className="text-sm text-primary">View More</Text>
 								</Pressable>
 							</View>
-							<ServicesNearYouList services={servicesNearYou} isLoading={servicesNearYouLoading} />
+							<ServiceProvidersList
+								providers={serviceProviders}
+								isLoading={serviceProvidersLoading}
+							/>
 						</View>
 					</View>
 				</View>
@@ -99,6 +114,12 @@ export default function Home() {
 				categories={categories}
 				isLoading={isLoading}
 				onSelectCategory={handleCategoryPress}
+			/>
+			<ServiceProvidersModal
+				visible={viewMoreProvidersModalVisible}
+				onClose={() => setViewMoreProvidersModalVisible(false)}
+				providers={modalProviders}
+				isLoading={modalProvidersLoading}
 			/>
 		</UserLayout>
 	);
