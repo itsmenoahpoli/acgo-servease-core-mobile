@@ -54,10 +54,10 @@ export default function Home() {
 					/>
 				}
 			>
-				<View className="p-4">
-					<View className="mb-6">
+				<View className="flex flex-col gap-8 p-4">
+					<View>
 						<View className="flex-row items-center justify-between mb-5">
-							<Text className="text-lg font-semibold text-gray-900">Search by Categories</Text>
+							<Text className="text-xl font-semibold text-gray-900">Search by Categories</Text>
 							<Pressable onPress={() => setViewAllCategoriesModalVisible(true)}>
 								<Text className="text-sm text-primary">View All</Text>
 							</Pressable>
@@ -69,9 +69,19 @@ export default function Home() {
 						/>
 					</View>
 
-					<View className="mb-6">
+					<View>
 						<View className="flex-row items-center justify-between mb-5">
-							<Text className="text-lg font-semibold text-gray-900">Offered Services Near You</Text>
+							<Text className="text-xl font-semibold text-gray-900">Offered Services Near You</Text>
+							<Pressable onPress={() => {}}>
+								<Text className="text-sm text-primary">View More</Text>
+							</Pressable>
+						</View>
+						<ServicesNearYouList />
+					</View>
+
+					<View>
+						<View className="flex-row items-center justify-between mb-5">
+							<Text className="text-xl font-semibold text-gray-900">Top Service Providers</Text>
 							<Pressable onPress={() => {}}>
 								<Text className="text-sm text-primary">View More</Text>
 							</Pressable>
