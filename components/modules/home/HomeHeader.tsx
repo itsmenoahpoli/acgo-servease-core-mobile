@@ -9,7 +9,7 @@ interface HomeHeaderProps {
 
 export function HomeHeader({ locationLabel, onProfilePress }: HomeHeaderProps) {
 	return (
-		<View className="px-4 pb-3" style={{ paddingTop: isIOS() ? 0 : 16 }}>
+		<View className="px-4 pb-12 bg-secondary" style={{ paddingTop: isIOS() ? 0 : 16 }}>
 			<View className="flex-row items-center justify-between mb-3">
 				<Pressable className="flex-row items-center">
 					<Text className="text-sm text-white mr-1">Location:</Text>

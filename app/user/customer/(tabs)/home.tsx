@@ -42,7 +42,7 @@ export default function Home() {
 			</View>
 
 			<ScrollView
-				className="flex-1 bg-white"
+				className="flex-1 bg-white rounded-t-2xl -mt-5"
 				showsVerticalScrollIndicator={false}
 				refreshControl={
 					<RefreshControl
@@ -69,7 +69,7 @@ export default function Home() {
 						/>
 					</View>
 
-					<View className="flex flex-col gap-10">
+					<View className="flex flex-col gap-5">
 						<View>
 							<View className="flex-row items-center justify-between mb-5">
 								<Text className="text-xl font-semibold text-gray-900">Offered Services Near You</Text>
