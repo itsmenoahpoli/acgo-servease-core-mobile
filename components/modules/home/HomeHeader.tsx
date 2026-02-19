@@ -7,8 +7,6 @@ interface HomeHeaderProps {
 	onProfilePress: () => void;
 }
 
-console.log('isIOS', isIOS());
-
 export function HomeHeader({ locationLabel, onProfilePress }: HomeHeaderProps) {
 	return (
 		<View className="px-4 pb-3" style={{ paddingTop: isIOS() ? 0 : 16 }}>

@@ -79,7 +79,7 @@ instance.interceptors.response.use(undefined, (err: unknown) => {
 		'Request failed';
 	const status = (err as { response?: { status?: number } }).response?.status ?? 0;
 	const data = (err as { response?: { data?: unknown } }).response?.data;
-	console.log('msg', msg);
+	console.error('[httpClient] Error response message:', msg);
 	throw createHttpError(msg, status, data);
 });
 

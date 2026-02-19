@@ -67,7 +67,13 @@ export function ServicesNearYouList({ services, isLoading = false }: ServicesNea
 	}
 
 	const onSelect = (service: Service) => {
-		router.push(`/user/customer/service/${service.id}`);
+		router.push({
+			pathname: '/user/customer/service/[id]',
+			params: {
+				id: service.id,
+				service: JSON.stringify(service),
+			},
+		});
 	};
 
 	return (
