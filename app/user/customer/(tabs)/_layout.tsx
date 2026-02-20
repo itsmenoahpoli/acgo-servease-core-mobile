@@ -31,11 +31,11 @@ export default function CustomerTabsLayout() {
 				}}
 			/>
 			<Tabs.Screen
-				name="cart"
+				name="bookings"
 				options={{
-					title: 'Cart',
+					title: 'Bookings',
 					tabBarIcon: ({ color, focused }) => (
-						<Ionicons name={focused ? 'cart' : 'cart-outline'} size={20} color={color} />
+						<Ionicons name={focused ? 'calendar' : 'calendar-outline'} size={20} color={color} />
 					),
 				}}
 			/>

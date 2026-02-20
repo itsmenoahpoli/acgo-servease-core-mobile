@@ -5,9 +5,11 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { UserLayout } from '@/components/layouts/UserLayout';
+import { BookingSuccessModal } from '@/components/ui/BookingSuccessModal';
 import { DatePicker } from '@/components/ui/DatePicker';
 import { TimePicker } from '@/components/ui/TimePicker';
 import { useAuthProfile } from '@/hooks/useAuthProfile';
+import { customerBookingsService } from '@/services/customer-bookings.service';
 import type { Service } from '@/types/service';
 import { formatPriceAmount } from '@/utils/helpers.util';
 
@@ -23,6 +25,8 @@ export default function ServiceCheckout() {
 	const [selectedTime, setSelectedTime] = useState<Date | null>(null);
 	const [location, setLocation] = useState('');
 	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [showSuccessModal, setShowSuccessModal] = useState(false);
+	const [bookingError, setBookingError] = useState<string | null>(null);
 
 	useEffect(() => {
 		if (hasPrefilledLocation.current || !profile?.address?.trim()) return;
@@ -61,12 +65,29 @@ export default function ServiceCheckout() {
 	const canSubmit = selectedDate != null && selectedTime != null && location.trim().length > 0;
 
 	const handleConfirm = async () => {
-		if (!canSubmit) return;
+		if (!canSubmit || !service || !selectedDate || !selectedTime) return;
+		setBookingError(null);
 		setIsSubmitting(true);
-		// TODO: call booking API
-		await new Promise((r) => setTimeout(r, 800));
-		setIsSubmitting(false);
-		router.replace('/user/customer');
+		try {
+			const scheduleDate = new Date(selectedDate);
+			scheduleDate.setHours(selectedTime.getHours(), selectedTime.getMinutes(), 0, 0);
+			const schedule = scheduleDate.toISOString();
+			await customerBookingsService.createBooking({
+				serviceId: service.id,
+				schedule,
+				address: location.trim(),
+			});
+			setShowSuccessModal(true);
+		} catch (err) {
+			setBookingError((err as Error).message ?? 'Failed to create booking');
+		} finally {
+			setIsSubmitting(false);
+		}
+	};
+
+	const handleSuccessClose = () => {
+		setShowSuccessModal(false);
+		router.replace('/user/customer/bookings');
 	};
 
 	return (
@@ -100,6 +121,11 @@ export default function ServiceCheckout() {
 							</View>
 						</View>
 
+						{bookingError ? (
+							<View className="bg-red-50 border border-red-200 rounded-xl p-3 mb-4">
+								<Text className="text-sm text-red-700">{bookingError}</Text>
+							</View>
+						) : null}
 						<View className="bg-white rounded-2xl p-4 mb-4 border border-gray-100">
 							<DatePicker
 								label="Date"
@@ -109,12 +135,7 @@ export default function ServiceCheckout() {
 								minimumDate={new Date()}
 								containerClassName="mb-3"
 							/>
-							<TimePicker
-								label="Time"
-								value={selectedTime}
-								onChange={setSelectedTime}
-								placeholder="Select time"
-							/>
+							<TimePicker label="Time" value={selectedTime} onChange={setSelectedTime} placeholder="Select time" />
 						</View>
 
 						<View className="bg-white rounded-2xl p-4 mb-4 border border-gray-100">
@@ -158,11 +179,12 @@ export default function ServiceCheckout() {
 						className={`rounded-xl py-4 items-center ${canSubmit && !isSubmitting ? 'bg-primary' : 'bg-gray-300'}`}
 					>
 						<Text className="text-white font-semibold text-base">
-							{isSubmitting ? <ActivityIndicator /> : 'CONFIRM BOOKING'}
+							{isSubmitting ? <ActivityIndicator color="white" /> : 'CONFIRM BOOKING'}
 						</Text>
 					</Pressable>
 				</View>
 			</View>
+			<BookingSuccessModal buttonText="View my bookings" visible={showSuccessModal} onClose={handleSuccessClose} />
 		</UserLayout>
 	);
 }
