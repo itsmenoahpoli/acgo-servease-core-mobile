@@ -94,9 +94,9 @@ export default function ServiceCheckout() {
 		<UserLayout showHeader={false} showFooter={false}>
 			<StatusBar style="light" />
 			<View className="flex-1 bg-gray-50">
-				<View className="bg-white border-b border-gray-100 px-4 pt-4" style={{ paddingBottom: 16 }}>
+				<View className="bg-white border-b border-gray-100 px-4 pt-4" style={{ paddingBottom: 12 }}>
 					<View className="flex-row items-center justify-between">
-						<Pressable onPress={() => router.back()} className="p-2 -ml-2">
+						<Pressable onPress={() => router.back()} className="-ml-2">
 							<Ionicons name="arrow-back" size={24} color="#111827" />
 						</Pressable>
 						<Text className="text-lg font-semibold text-gray-900">Book Service</Text>

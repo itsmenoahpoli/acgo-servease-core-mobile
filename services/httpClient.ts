@@ -71,10 +71,12 @@ instance.interceptors.request.use(async (config) => {
 });
 
 instance.interceptors.response.use(undefined, (err: unknown) => {
-	const msg =
+	const rawMsg =
 		(err as { response?: { data?: { message?: string } }; message?: string }).response?.data?.message ??
 		(err as { message?: string }).message ??
 		'Request failed';
+	const isTimeout = (err as { code?: string }).code === 'ECONNABORTED' || /timeout/i.test(String(rawMsg ?? ''));
+	const msg = isTimeout ? 'The request took too long. Please check your connection and try again.' : rawMsg;
 	const status = (err as { response?: { status?: number } }).response?.status ?? 0;
 	const data = (err as { response?: { data?: unknown } }).response?.data;
 	console.error('[httpClient] Error response message:', msg);

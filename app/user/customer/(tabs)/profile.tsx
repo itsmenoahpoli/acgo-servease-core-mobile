@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { View, Text, ScrollView, Pressable, ActivityIndicator, Alert, Modal } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { UserLayout } from '@/components/layouts/UserLayout';
@@ -54,11 +55,15 @@ function ListModal({
 	emptyIcon?: string;
 	onClose: () => void;
 }) {
+	const insets = useSafeAreaInsets();
 	return (
 		<Modal visible={visible} animationType="slide" statusBarTranslucent>
 			<StatusBar style="dark" />
 			<View className="flex-1 bg-white">
-				<View className="flex-row items-center justify-between px-4 py-4 border-b border-gray-200">
+				<View
+					className="flex-row items-center justify-between px-4 py-4 border-b border-gray-200"
+					style={{ paddingTop: insets.top, paddingBottom: 16 }}
+				>
 					<Text className="text-xl font-bold text-gray-900">{title}</Text>
 					<Pressable onPress={onClose} className="w-10 h-10 items-center justify-center" hitSlop={8}>
 						<Ionicons name="close" size={28} color="#374151" />
@@ -66,7 +71,7 @@ function ListModal({
 				</View>
 				<ScrollView className="flex-1" contentContainerStyle={{ flexGrow: 1, padding: 16 }}>
 					<View className="flex-1 items-center justify-center py-16">
-						<Ionicons name={emptyIcon} size={64} color="#D1D5DB" />
+						<Ionicons name={emptyIcon as any} size={64} color="#D1D5DB" />
 						<Text className="text-lg font-medium text-gray-500 mt-4">{emptyMessage}</Text>
 					</View>
 				</ScrollView>
@@ -153,11 +158,7 @@ export default function Profile() {
 									label="Transactions"
 									onPress={() => setListModalType('transactions')}
 								/>
-								<SettingsItem
-									icon="clipboard-outline"
-									label="Orders"
-									onPress={() => setListModalType('orders')}
-								/>
+								<SettingsItem icon="clipboard-outline" label="Orders" onPress={() => setListModalType('orders')} />
 								<SettingsItem icon="notifications-outline" label="Notification" onPress={() => {}} />
 								<SettingsItem icon="sunny-outline" label="Theme" value="Light" onPress={() => {}} />
 								<SettingsItem

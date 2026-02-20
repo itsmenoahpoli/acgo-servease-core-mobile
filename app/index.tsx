@@ -18,6 +18,8 @@ export default function () {
 			if (IS_DEV) {
 				router.push('/user/customer/(tabs)/home');
 			} else {
+				// router.push('/auth/signin');
+
 				setTimeout(() => {
 					authTokenStorage.getAccessToken().then((token) => {
 						if (token) {
