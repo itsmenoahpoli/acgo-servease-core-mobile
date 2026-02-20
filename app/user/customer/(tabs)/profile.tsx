@@ -3,6 +3,7 @@ import { useRouter } from 'expo-router';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { UserLayout } from '@/components/layouts/UserLayout';
 import { useAuthProfile } from '@/hooks/useAuthProfile';
+import { authTokenStorage } from '@/services/auth-token-storage';
 
 interface SettingsItemProps {
 	icon: string;
@@ -40,7 +41,10 @@ export default function Profile() {
 	const router = useRouter();
 	const { data: profile, isLoading, isError } = useAuthProfile();
 
-	const handleLogout = () => router.push('/auth/signin');
+	const handleLogout = async () => {
+		await authTokenStorage.clearTokens();
+		router.push('/auth/signin');
+	};
 	const handleEditProfile = () => console.log('Edit profile picture');
 
 	const displayName = getDisplayName(profile ?? null);

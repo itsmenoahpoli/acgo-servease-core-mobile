@@ -1,4 +1,5 @@
 import axios, { type AxiosRequestConfig } from 'axios';
+import { authTokenStorage } from './auth-token-storage';
 
 const baseURL = process.env.EXPO_PUBLIC_API_URL ?? '';
 
@@ -48,9 +49,6 @@ export interface HttpError extends Error {
 	data?: unknown;
 }
 
-const getAuthToken = (): string | null =>
-	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3MDdkMWFkZC1iZDJhLTQ0YmQtYTZmMS0zZDA3MDMxN2NmODUiLCJlbWFpbCI6ImN1c3RvbWVyQHNlcnZlYXNlLmNvbSIsImFjY291bnRUeXBlIjoiY3VzdG9tZXIiLCJhY2NvdW50U3RhdHVzIjoiQUNUSVZFIiwiaWF0IjoxNzcxNDkzMjk3LCJleHAiOjE3NzE1Nzk2OTd9.ND2X5ZfU8JEh96NuBZ7fZbDp3jR_3meg-BVCKkL1G_c';
-
 function createHttpError(message: string, status: number, data?: unknown): HttpError {
 	const err = new Error(String(message ?? 'Request failed')) as HttpError;
 	err.name = 'HttpError';
@@ -64,8 +62,8 @@ const instance = axios.create({
 	headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
 });
 
-instance.interceptors.request.use((config) => {
-	const token = getAuthToken();
+instance.interceptors.request.use(async (config) => {
+	const token = await authTokenStorage.getAccessToken();
 	if (token) {
 		config.headers.Authorization = `Bearer ${token}`;
 	}

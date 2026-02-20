@@ -4,12 +4,13 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { BRAND_LOGO } from '@/assets';
 import { AuthLayout } from '@/components/layouts/AuthLayout';
 import { authSigninService } from '@/services/auth-signin.service';
+import { authTokenStorage } from '@/services/auth-token-storage';
 
 export default function VerifyOTP() {
 	const router = useRouter();
 	const params = useLocalSearchParams<{ method?: string; identifier?: string; flow?: string }>();
 	const method = (params.method as 'email' | 'sms') || 'email';
-	const identifier = Array.isArray(params.identifier) ? params.identifier[0] : params.identifier ?? '';
+	const identifier = Array.isArray(params.identifier) ? params.identifier[0] : (params.identifier ?? '');
 	const flow = Array.isArray(params.flow) ? params.flow[0] : params.flow;
 	const isLoginFlow = flow === 'login';
 
@@ -62,7 +63,12 @@ export default function VerifyOTP() {
 			setError(null);
 			setIsSubmitting(true);
 			try {
-				await authSigninService.verify2FA({ email: identifier, code: otpCode });
+				const data = await authSigninService.verify2FA({ email: identifier, code: otpCode });
+				const accessToken = data?.accessToken;
+				const refreshToken = data?.refreshToken ?? '';
+				if (accessToken) {
+					await authTokenStorage.setTokens(accessToken, refreshToken);
+				}
 				router.replace('/user/customer');
 			} catch (err) {
 				setError((err as Error).message ?? 'Verification failed');
@@ -100,11 +106,7 @@ export default function VerifyOTP() {
 						Enter the 6-digit code sent to {method === 'email' ? 'your email' : 'your phone'}
 						{isLoginFlow ? ' to complete sign in' : ''}
 					</Text>
-					{identifier && (
-						<Text className="text-base text-white/60 text-center px-4 mt-2">
-							{identifier}
-						</Text>
-					)}
+					{identifier && <Text className="text-base text-white/60 text-center px-4 mt-2">{identifier}</Text>}
 				</View>
 
 				<View className="flex-row justify-between mb-6">
@@ -134,9 +136,7 @@ export default function VerifyOTP() {
 				<Pressable
 					onPress={handleVerify}
 					disabled={!isOtpComplete || isSubmitting}
-					className={`rounded-lg items-center justify-center h-14 mb-4 ${
-						isOtpComplete && !isSubmitting ? 'bg-primary' : 'bg-primary/50'
-					}`}
+					className="bg-primary rounded-lg items-center justify-center h-14 mb-4"
 				>
 					{isSubmitting ? (
 						<ActivityIndicator color="white" />
@@ -146,16 +146,14 @@ export default function VerifyOTP() {
 				</Pressable>
 
 				<View className="flex-row items-center justify-center mb-6">
-					<Text className="text-white/80 text-sm">Didn't receive the code? </Text>
+					<Text className="text-white/80 text-sm">{"Didn't receive the code? "}</Text>
 					<Pressable onPress={handleResend}>
 						<Text className="text-white text-sm font-semibold">Resend</Text>
 					</Pressable>
 				</View>
 
 				<View className="flex-row items-center justify-center mt-6">
-					<Text className="text-white/80 text-sm">
-						{isLoginFlow ? 'Wrong account? ' : 'Remember your password? '}
-					</Text>
+					<Text className="text-white/80 text-sm">{isLoginFlow ? 'Wrong account? ' : 'Remember your password? '}</Text>
 					<Pressable onPress={() => router.push('/auth/signin')}>
 						<Text className="text-white text-sm font-semibold">Sign In</Text>
 					</Pressable>
@@ -164,4 +162,3 @@ export default function VerifyOTP() {
 		</AuthLayout>
 	);
 }
-

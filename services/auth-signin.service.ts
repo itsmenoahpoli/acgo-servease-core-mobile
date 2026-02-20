@@ -21,6 +21,7 @@ export interface Verify2FAPayload {
 
 export interface Verify2FAResponse {
 	accessToken?: string;
+	refreshToken?: string;
 	message?: string;
 	[key: string]: unknown;
 }
