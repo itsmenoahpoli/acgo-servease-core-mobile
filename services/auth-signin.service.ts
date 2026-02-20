@@ -1,7 +1,7 @@
 import { httpClient } from './httpClient';
 
 const AUTH_SIGNIN_PATH = '/auth/signin';
-const AUTH_VERIFY_2FA_PATH = '/auth/signin/verify-2fa';
+const AUTH_VERIFY_2FA_PATH = '/auth/signin/verify-otp';
 
 export interface SignInPayload {
 	email: string;
@@ -16,7 +16,7 @@ export interface SignInResponse {
 
 export interface Verify2FAPayload {
 	email: string;
-	code: string;
+	otp: string;
 }
 
 export interface Verify2FAResponse {

@@ -14,56 +14,26 @@ export default function VerifyOTP() {
 	const flow = Array.isArray(params.flow) ? params.flow[0] : params.flow;
 	const isLoginFlow = flow === 'login';
 
-	const [otp, setOtp] = useState(['', '', '', '', '', '']);
-	const inputRefs = useRef<(TextInput | null)[]>([]);
+	const [code, setCode] = useState('');
+	const inputRef = useRef<TextInput>(null);
 	const [error, setError] = useState<string | null>(null);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 
-	const handleOtpChange = (value: string, index: number) => {
-		if (value.length > 1) {
-			const digits = value.replace(/\D/g, '').split('').slice(0, 6);
-			const newOtp = [...otp];
-			digits.forEach((digit, i) => {
-				if (index + i < 6) {
-					newOtp[index + i] = digit;
-				}
-			});
-			setOtp(newOtp);
-			const nextIndex = Math.min(index + digits.length, 5);
-			inputRefs.current[nextIndex]?.focus();
-			return;
-		}
-
-		if (value && !/^\d$/.test(value)) {
-			return;
-		}
-
-		const newOtp = [...otp];
-		newOtp[index] = value;
-		setOtp(newOtp);
-
-		if (value && index < 5) {
-			inputRefs.current[index + 1]?.focus();
-		}
+	const handleCodeChange = (value: string) => {
+		setCode(value.replace(/\D/g, '').slice(0, 6));
 	};
 
-	const handleKeyPress = (key: string, index: number) => {
-		if (key === 'Backspace' && !otp[index] && index > 0) {
-			inputRefs.current[index - 1]?.focus();
-		}
-	};
-
-	const isOtpComplete = otp.every((digit) => digit !== '');
+	const isOtpComplete = code.length === 6;
 
 	const handleVerify = async () => {
-		const otpCode = otp.join('');
-		if (otpCode.length !== 6) return;
+		if (code.length !== 6) return;
+		const otpCode = code;
 
 		if (isLoginFlow) {
 			setError(null);
 			setIsSubmitting(true);
 			try {
-				const data = await authSigninService.verify2FA({ email: identifier, code: otpCode });
+				const data = await authSigninService.verify2FA({ email: identifier, otp: otpCode });
 				const accessToken = data?.accessToken;
 				const refreshToken = data?.refreshToken ?? '';
 				if (accessToken) {
@@ -85,8 +55,8 @@ export default function VerifyOTP() {
 	};
 
 	const handleResend = () => {
-		setOtp(['', '', '', '', '', '']);
-		inputRefs.current[0]?.focus();
+		setCode('');
+		inputRef.current?.focus();
 	};
 
 	return (
@@ -109,23 +79,18 @@ export default function VerifyOTP() {
 					{identifier && <Text className="text-base text-white/60 text-center px-4 mt-2">{identifier}</Text>}
 				</View>
 
-				<View className="flex-row justify-between mb-6">
-					{otp.map((digit, index) => (
-						<TextInput
-							key={index}
-							ref={(ref) => {
-								inputRefs.current[index] = ref;
-							}}
-							value={digit}
-							onChangeText={(value) => handleOtpChange(value, index)}
-							onKeyPress={({ nativeEvent }) => handleKeyPress(nativeEvent.key, index)}
-							keyboardType="number-pad"
-							maxLength={6}
-							className="w-12 h-14 bg-white/25 border border-white/40 rounded-lg text-white text-xl font-bold text-center"
-							selectTextOnFocus
-						/>
-					))}
-				</View>
+				<TextInput
+					ref={inputRef}
+					value={code}
+					onChangeText={handleCodeChange}
+					keyboardType="number-pad"
+					maxLength={6}
+					placeholder="000000"
+					placeholderTextColor="rgba(255,255,255,0.5)"
+					className="h-14 bg-white/25 border border-white/40 rounded-lg text-white text-xl font-bold text-center mb-6 px-4"
+					selectTextOnFocus
+					autoFocus
+				/>
 
 				{error ? (
 					<View className="mb-3 rounded-lg bg-red-500/20 border border-red-400 px-3 py-2">

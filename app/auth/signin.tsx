@@ -116,7 +116,7 @@ export default function SignIn() {
 						onPress={() => router.push('/auth/request-otp')}
 						className="bg-white rounded-lg items-center justify-center h-12 flex-row"
 					>
-						<Text className="text-gray-800 text-base font-semibold">Continue with Phone number</Text>
+						<Text className="text-gray-800 text-base font-semibold">Continue via SMS</Text>
 					</Pressable>
 
 					<Pressable className="bg-white rounded-lg items-center justify-center h-12 flex-row">
