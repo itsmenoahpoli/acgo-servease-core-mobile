@@ -87,7 +87,6 @@ export function ServiceCategoryChips({ categories, isLoading = false, onSelect }
 					style={{ width: `${100 / COLUMNS}%` }}
 				>
 					<View className="w-20 h-20 rounded-lg bg-gray-100 items-center justify-center mb-1">
-						{/* <Ionicons name={PLACEHOLDER_ICON} size={28} color="#7a0f1d" /> */}
 						{getCategoryIcon(category.name)}
 					</View>
 					<Text className="text-sm text-black text-center">{formatCategoryLabel(category.name)}</Text>

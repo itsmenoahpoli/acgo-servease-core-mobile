@@ -55,7 +55,11 @@ export default function Home() {
 	}, [queryClient]);
 
 	const handleCategoryPress = (category: ServiceCategory) => {
-		console.log('Category selected:', category.name);
+		setViewAllCategoriesModalVisible(false);
+		router.push({
+			pathname: '/user/customer/services',
+			params: { categoryId: category.id, categoryName: category.name ?? '' },
+		});
 	};
 
 	const handleSelectService = (service: Service) => {
