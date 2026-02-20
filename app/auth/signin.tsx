@@ -1,14 +1,38 @@
 import { useState } from 'react';
-import { View, Text, Pressable, Image, TextInput } from 'react-native';
+import { View, Text, Pressable, Image, TextInput, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
 import { BRAND_LOGO, GOOGLE_LOGO, FACEBOOK_LOGO } from '@/assets';
 import { AuthLayout } from '@/components/layouts/AuthLayout';
+import { authSigninService } from '@/services/auth-signin.service';
 
 export default function SignIn() {
 	const router = useRouter();
-	const [email, setEmail] = useState('');
-	const [password, setPassword] = useState('');
+	const [email, setEmail] = useState('customer@servease.com');
+	const [password, setPassword] = useState('Test123!@#');
 	const [showPassword, setShowPassword] = useState(false);
+	const [error, setError] = useState<string | null>(null);
+	const [isSubmitting, setIsSubmitting] = useState(false);
+
+	const handleSignIn = async () => {
+		const trimmedEmail = email.trim();
+		if (!trimmedEmail || !password) {
+			setError('Please enter email and password');
+			return;
+		}
+		setError(null);
+		setIsSubmitting(true);
+		try {
+			await authSigninService.signin({ email: trimmedEmail, password });
+			router.push({
+				pathname: '/auth/verify-otp',
+				params: { method: 'email', identifier: trimmedEmail, flow: 'login' },
+			});
+		} catch (err) {
+			setError((err as Error).message ?? 'Sign in failed');
+		} finally {
+			setIsSubmitting(false);
+		}
+	};
 
 	return (
 		<AuthLayout>
@@ -34,7 +58,7 @@ export default function SignIn() {
 							keyboardType="email-address"
 							autoCapitalize="none"
 							autoComplete="email"
-							className="bg-white rounded-lg px-4 py-3 text-white text-base h-14"
+							className="bg-white rounded-lg px-4 pb-3 text-base text-black h-14"
 						/>
 					</View>
 
@@ -53,7 +77,7 @@ export default function SignIn() {
 								secureTextEntry={!showPassword}
 								autoCapitalize="none"
 								autoComplete="password"
-								className="bg-white rounded-lg px-4 py-3 text-white text-base h-14 pr-16"
+								className="bg-white rounded-lg px-4 pb-3 text-black text-base h-14 pr-16"
 							/>
 							<Pressable
 								onPress={() => setShowPassword(!showPassword)}
@@ -64,8 +88,22 @@ export default function SignIn() {
 						</View>
 					</View>
 
-					<Pressable className="bg-primary rounded-lg items-center justify-center h-14">
-						<Text className="text-white text-lg font-bold">Sign In</Text>
+					{error ? (
+						<View className="mb-3 rounded-lg bg-red-500/20 border border-red-400 px-3 py-2">
+							<Text className="text-red-200 text-sm">{error}</Text>
+						</View>
+					) : null}
+
+					<Pressable
+						onPress={handleSignIn}
+						disabled={isSubmitting}
+						className={`rounded-lg items-center justify-center h-14 ${isSubmitting ? 'bg-primary/60' : 'bg-primary'}`}
+					>
+						{isSubmitting ? (
+							<ActivityIndicator color="white" />
+						) : (
+							<Text className="text-white text-lg font-bold">Sign In</Text>
+						)}
 					</Pressable>
 
 					<View className="flex-row items-center my-2">

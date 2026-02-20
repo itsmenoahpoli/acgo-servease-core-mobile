@@ -1,7 +1,8 @@
-import { View, Text, ScrollView, Pressable } from 'react-native';
+import { View, Text, ScrollView, Pressable, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { UserLayout } from '@/components/layouts/UserLayout';
+import { useAuthProfile } from '@/hooks/useAuthProfile';
 
 interface SettingsItemProps {
 	icon: string;
@@ -27,11 +28,23 @@ function SettingsItem({ icon, label, value, onPress }: SettingsItemProps) {
 	);
 }
 
+function getDisplayName(profile: { name?: string; firstName?: string; lastName?: string } | null): string {
+	if (!profile) return 'Customer';
+	if (profile.name?.trim()) return profile.name.trim();
+	const first = profile.firstName?.trim() ?? '';
+	const last = profile.lastName?.trim() ?? '';
+	return [first, last].filter(Boolean).join(' ') || 'Customer';
+}
+
 export default function Profile() {
 	const router = useRouter();
+	const { data: profile, isLoading, isError } = useAuthProfile();
 
 	const handleLogout = () => router.push('/auth/signin');
 	const handleEditProfile = () => console.log('Edit profile picture');
+
+	const displayName = getDisplayName(profile ?? null);
+	const displayId = profile?.id ? profile.id.slice(0, 8) : '—';
 
 	return (
 		<UserLayout showHeader={false} showFooter={false}>
@@ -60,13 +73,31 @@ export default function Profile() {
 								<Ionicons name="create-outline" size={14} color="white" />
 							</Pressable>
 						</View>
-						<Text className="text-2xl font-bold text-gray-900 mb-1">Ryan Sterling</Text>
-						<Text className="text-sm text-gray-600 mb-3">ID No: 1105486242</Text>
+						{isLoading ? (
+							<View className="mb-4">
+								<ActivityIndicator size="small" color="#7a0f1d" />
+							</View>
+						) : isError ? (
+							<Text className="text-sm text-gray-500 mb-4">Unable to load profile</Text>
+						) : null}
+						<Text className="text-2xl font-bold text-gray-900 mb-1 text-center">{displayName}</Text>
+						<Text className="text-sm text-gray-600 mb-3">ID: {displayId}</Text>
 						<View className="flex-row items-center bg-primary px-4 py-2 rounded-full">
 							<Ionicons name="checkmark-circle" size={18} color="white" />
 							<Text className="text-sm text-white font-semibold ml-2">Customer Account</Text>
 						</View>
 					</View>
+
+					{profile ? (
+						<View className="mt-4">
+							<Text className="text-lg font-semibold text-gray-900 mb-2">Profile details</Text>
+							<View className="bg-white rounded-lg border border-gray-100">
+								<SettingsItem icon="mail-outline" label="Email" value={profile.email} />
+								<SettingsItem icon="call-outline" label="Phone" value={profile.phoneNumber} />
+								<SettingsItem icon="location-outline" label="Address" value={profile.address} />
+							</View>
+						</View>
+					) : null}
 
 					<View className="mt-8">
 						<Text className="text-lg font-semibold text-gray-900 mb-2">Settings</Text>
