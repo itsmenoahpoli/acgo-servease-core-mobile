@@ -1,4 +1,5 @@
-import { View, Text, Pressable } from 'react-native';
+import { useMemo, useState } from 'react';
+import { View, Text, Pressable, TextInput } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -10,6 +11,7 @@ import type { Service } from '@/types/service';
 export default function ServicesByCategory() {
 	const router = useRouter();
 	const insets = useSafeAreaInsets();
+	const [searchValue, setSearchValue] = useState('');
 	const params = useLocalSearchParams<{ categoryId?: string; categoryName?: string }>();
 	const categoryId = Array.isArray(params.categoryId) ? params.categoryId[0] : params.categoryId;
 	const categoryName = Array.isArray(params.categoryName) ? params.categoryName[0] : params.categoryName;
@@ -20,6 +22,17 @@ export default function ServicesByCategory() {
 		isError,
 		refetch,
 	} = useCustomerServices(categoryId ? { categoryId, limit: 50 } : {});
+
+	const filteredServices = useMemo(() => {
+		const q = searchValue.trim().toLowerCase();
+		if (!q) return services;
+		return services.filter(
+			(s) =>
+				s.title?.toLowerCase().includes(q) ||
+				s.description?.toLowerCase().includes(q) ||
+				s.category?.name?.toLowerCase().includes(q),
+		);
+	}, [services, searchValue]);
 
 	const title = categoryName?.trim() || 'Services';
 
@@ -59,8 +72,25 @@ export default function ServicesByCategory() {
 					<View className="w-8" />
 				</View>
 
+				<View className="flex-row items-center gap-2 px-4 py-3 bg-white border-b border-gray-100">
+					<View className="flex-1 flex-row items-center rounded-lg border border-gray-200 bg-gray-50 px-3 py-2.5">
+						<Ionicons name="search-outline" size={18} color="#9CA3AF" />
+						<TextInput
+							value={searchValue}
+							onChangeText={setSearchValue}
+							placeholder="Search services"
+							placeholderTextColor="#9CA3AF"
+							className="flex-1 ml-2 text-base text-gray-900"
+							returnKeyType="search"
+						/>
+					</View>
+					<Pressable className="w-11 h-11 rounded-lg border border-gray-200 bg-gray-50 items-center justify-center">
+						<Ionicons name="options-outline" size={22} color="#374151" />
+					</Pressable>
+				</View>
+
 				<ServiceList
-					services={services}
+					services={filteredServices}
 					isLoading={isLoading}
 					isError={isError}
 					refetch={refetch}

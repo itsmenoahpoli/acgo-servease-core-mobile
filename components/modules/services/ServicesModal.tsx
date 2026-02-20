@@ -78,6 +78,7 @@ export function ServicesModal({
 							contentContainerStyle={{ padding: 16, paddingBottom: 24 }}
 							showsVerticalScrollIndicator={false}
 						>
+							{/* TODO: Use ServiceList component */}
 							{filteredServices.map((service) => (
 								<ServiceCard
 									key={service.id}
