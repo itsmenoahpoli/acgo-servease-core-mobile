@@ -1,5 +1,7 @@
-import { View, Text, ScrollView, Pressable, ActivityIndicator } from 'react-native';
+import { useState } from 'react';
+import { View, Text, ScrollView, Pressable, ActivityIndicator, Alert, Modal } from 'react-native';
 import { useRouter } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { UserLayout } from '@/components/layouts/UserLayout';
 import { useAuthProfile } from '@/hooks/useAuthProfile';
@@ -37,13 +39,59 @@ function getDisplayName(profile: { name?: string; firstName?: string; lastName?:
 	return [first, last].filter(Boolean).join(' ') || 'Customer';
 }
 
+type ListModalType = 'transactions' | 'orders' | null;
+
+function ListModal({
+	visible,
+	title,
+	emptyMessage,
+	emptyIcon = 'document-text-outline',
+	onClose,
+}: {
+	visible: boolean;
+	title: string;
+	emptyMessage: string;
+	emptyIcon?: string;
+	onClose: () => void;
+}) {
+	return (
+		<Modal visible={visible} animationType="slide" statusBarTranslucent>
+			<StatusBar style="dark" />
+			<View className="flex-1 bg-white">
+				<View className="flex-row items-center justify-between px-4 py-4 border-b border-gray-200">
+					<Text className="text-xl font-bold text-gray-900">{title}</Text>
+					<Pressable onPress={onClose} className="w-10 h-10 items-center justify-center" hitSlop={8}>
+						<Ionicons name="close" size={28} color="#374151" />
+					</Pressable>
+				</View>
+				<ScrollView className="flex-1" contentContainerStyle={{ flexGrow: 1, padding: 16 }}>
+					<View className="flex-1 items-center justify-center py-16">
+						<Ionicons name={emptyIcon} size={64} color="#D1D5DB" />
+						<Text className="text-lg font-medium text-gray-500 mt-4">{emptyMessage}</Text>
+					</View>
+				</ScrollView>
+			</View>
+		</Modal>
+	);
+}
+
 export default function Profile() {
 	const router = useRouter();
 	const { data: profile, isLoading, isError } = useAuthProfile();
+	const [listModalType, setListModalType] = useState<ListModalType>(null);
 
-	const handleLogout = async () => {
-		await authTokenStorage.clearTokens();
-		router.push('/auth/signin');
+	const handleSignout = () => {
+		Alert.alert('Sign out', 'Are you sure you want to sign out?', [
+			{ text: 'Cancel', style: 'cancel' },
+			{
+				text: 'Sign out',
+				style: 'destructive',
+				onPress: async () => {
+					await authTokenStorage.clearTokens();
+					router.push('/auth/signin');
+				},
+			},
+		]);
 	};
 	const handleEditProfile = () => console.log('Edit profile picture');
 
@@ -52,74 +100,104 @@ export default function Profile() {
 
 	return (
 		<UserLayout showHeader={false} showFooter={false}>
-			<View className="bg-white">
-				<View className="flex-row items-center justify-between px-4 py-4">
-					<View className="flex-row items-center flex-1">
-						<Text className="text-2xl font-bold text-gray-900">Profile</Text>
-					</View>
-					<Pressable onPress={handleLogout}>
-						<Text className="text-base text-primary font-medium">Logout</Text>
-					</Pressable>
+			<View className="flex-1 bg-gray-50">
+				<View className="bg-white border-b border-gray-100 px-4 pt-4" style={{ paddingBottom: 12 }}>
+					<Text className="text-lg text-center font-semibold text-gray-900">Profile</Text>
 				</View>
-			</View>
 
-			<ScrollView className="flex-1 bg-white">
-				<View className="px-4 py-6">
-					<View className="items-center mb-6">
-						<View className="relative mb-4">
-							<View className="w-28 h-28 rounded-full bg-gray-200 items-center justify-center overflow-hidden">
-								<Ionicons name="person" size={56} color="#9CA3AF" />
+				<ScrollView className="flex-1 bg-white">
+					<View className="px-4 py-6">
+						<View className="items-center mb-6">
+							<View className="relative mb-4">
+								<View className="w-28 h-28 rounded-full bg-gray-200 items-center justify-center overflow-hidden">
+									<Ionicons name="person" size={56} color="#9CA3AF" />
+								</View>
+								<Pressable
+									onPress={handleEditProfile}
+									className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-blue-500 items-center justify-center border-2 border-white"
+								>
+									<Ionicons name="create-outline" size={14} color="white" />
+								</Pressable>
 							</View>
+							{isLoading ? (
+								<View className="mb-4">
+									<ActivityIndicator size="small" color="#7a0f1d" />
+								</View>
+							) : isError ? (
+								<Text className="text-sm text-gray-500 mb-4">Unable to load profile</Text>
+							) : null}
+							<Text className="text-2xl font-bold text-gray-900 mb-1 text-center">{displayName}</Text>
+							<Text className="text-sm text-gray-600 mb-3">ID: {displayId}</Text>
+							<View className="flex-row items-center bg-primary px-4 py-2 rounded-full">
+								<Ionicons name="checkmark-circle" size={18} color="white" />
+								<Text className="text-sm text-white font-semibold ml-2">Customer Account</Text>
+							</View>
+						</View>
+
+						{profile ? (
+							<View className="mt-4">
+								<Text className="text-lg font-semibold text-gray-900 mb-2">Profile details</Text>
+								<View className="bg-white rounded-lg border border-gray-100">
+									<SettingsItem icon="mail-outline" label="Email" value={profile.email} />
+									<SettingsItem icon="call-outline" label="Phone" value={profile.phoneNumber} />
+									<SettingsItem icon="location-outline" label="Address" value={profile.address} />
+								</View>
+							</View>
+						) : null}
+
+						<View className="mt-8">
+							<Text className="text-lg font-semibold text-gray-900 mb-2">Settings</Text>
+							<View className="bg-white rounded-lg">
+								<SettingsItem
+									icon="document-text-outline"
+									label="Transactions"
+									onPress={() => setListModalType('transactions')}
+								/>
+								<SettingsItem
+									icon="clipboard-outline"
+									label="Orders"
+									onPress={() => setListModalType('orders')}
+								/>
+								<SettingsItem icon="notifications-outline" label="Notification" onPress={() => {}} />
+								<SettingsItem icon="sunny-outline" label="Theme" value="Light" onPress={() => {}} />
+								<SettingsItem
+									icon="information-circle-outline"
+									label="Terms & Conditions"
+									onPress={() => router.push('/system/terms-conditions')}
+								/>
+								<SettingsItem
+									icon="shield-checkmark-outline"
+									label="Privacy Policy"
+									onPress={() => router.push('/system/privacy-policy')}
+								/>
+							</View>
+						</View>
+
+						<View className="mt-8 mb-6">
 							<Pressable
-								onPress={handleEditProfile}
-								className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-blue-500 items-center justify-center border-2 border-white"
+								onPress={handleSignout}
+								className="bg-secondary w-full py-4 items-center justify-center active:opacity-90 rounded-xl"
 							>
-								<Ionicons name="create-outline" size={14} color="white" />
+								<Text className="text-white text-base font-semibold">SIGNOUT OF YOUR ACCOUNT</Text>
 							</Pressable>
 						</View>
-						{isLoading ? (
-							<View className="mb-4">
-								<ActivityIndicator size="small" color="#7a0f1d" />
-							</View>
-						) : isError ? (
-							<Text className="text-sm text-gray-500 mb-4">Unable to load profile</Text>
-						) : null}
-						<Text className="text-2xl font-bold text-gray-900 mb-1 text-center">{displayName}</Text>
-						<Text className="text-sm text-gray-600 mb-3">ID: {displayId}</Text>
-						<View className="flex-row items-center bg-primary px-4 py-2 rounded-full">
-							<Ionicons name="checkmark-circle" size={18} color="white" />
-							<Text className="text-sm text-white font-semibold ml-2">Customer Account</Text>
-						</View>
 					</View>
+				</ScrollView>
+			</View>
 
-					{profile ? (
-						<View className="mt-4">
-							<Text className="text-lg font-semibold text-gray-900 mb-2">Profile details</Text>
-							<View className="bg-white rounded-lg border border-gray-100">
-								<SettingsItem icon="mail-outline" label="Email" value={profile.email} />
-								<SettingsItem icon="call-outline" label="Phone" value={profile.phoneNumber} />
-								<SettingsItem icon="location-outline" label="Address" value={profile.address} />
-							</View>
-						</View>
-					) : null}
-
-					<View className="mt-8">
-						<Text className="text-lg font-semibold text-gray-900 mb-2">Settings</Text>
-						<View className="bg-white rounded-lg">
-							<SettingsItem icon="document-text-outline" label="Transactions" onPress={() => {}} />
-							<SettingsItem icon="clipboard-outline" label="Orders" onPress={() => {}} />
-							<SettingsItem icon="globe-outline" label="Languages" onPress={() => {}} />
-							<SettingsItem icon="notifications-outline" label="Notification" onPress={() => {}} />
-							<SettingsItem icon="sunny-outline" label="Theme" value="Light" onPress={() => {}} />
-							<SettingsItem
-								icon="information-circle-outline"
-								label="Terms & Conditions"
-								onPress={() => router.push('/system/terms-conditions')}
-							/>
-						</View>
-					</View>
-				</View>
-			</ScrollView>
+			<ListModal
+				visible={listModalType === 'transactions'}
+				title="Transactions"
+				emptyMessage="No transactions yet"
+				onClose={() => setListModalType(null)}
+			/>
+			<ListModal
+				visible={listModalType === 'orders'}
+				title="Orders"
+				emptyMessage="No orders yet"
+				emptyIcon="clipboard-outline"
+				onClose={() => setListModalType(null)}
+			/>
 		</UserLayout>
 	);
 }

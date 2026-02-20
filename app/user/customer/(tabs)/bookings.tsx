@@ -84,8 +84,8 @@ function BookingCard({ booking, onPress }: { booking: Booking; onPress: () => vo
 					<Text className="text-xs text-gray-500">Amount</Text>
 					<Text className="text-sm font-semibold text-gray-900 ml-2">{formatPriceAmount(amount)}</Text>
 					{booking.payment?.status ? (
-						<View className="ml-2 px-2 py-0.5 rounded bg-gray-100">
-							<Text className="text-xs text-gray-600">{booking.payment.status}</Text>
+						<View className="ml-2 px-2 py-0.5 rounded bg-orange-900/10">
+							<Text className="text-xs text-gray-600">{booking.payment.status === 'PENDING' ? 'Unpaid' : ''}</Text>
 						</View>
 					) : null}
 				</View>
@@ -109,7 +109,7 @@ export default function BookingsTab() {
 			queryClient.invalidateQueries({ queryKey: customerBookingsQueryKey });
 			setSelectedBooking(null);
 		},
-		[queryClient]
+		[queryClient],
 	);
 
 	const filteredBookings = useMemo(() => {

@@ -4,6 +4,7 @@ import { View, Image, ImageBackground, Text, InteractionManager } from 'react-na
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as SplashScreen from 'expo-splash-screen';
 import { BRAND_LOGO, SPLASH_BG } from '@/assets';
+import { authTokenStorage } from '@/services/auth-token-storage';
 
 const IS_DEV: boolean = false;
 
@@ -18,7 +19,13 @@ export default function () {
 				router.push('/user/customer/(tabs)/home');
 			} else {
 				setTimeout(() => {
-					router.push('/auth/signin');
+					authTokenStorage.getAccessToken().then((token) => {
+						if (token) {
+							router.replace('/user/customer');
+						} else {
+							router.push('/auth/signin');
+						}
+					});
 				}, 2000);
 			}
 		});

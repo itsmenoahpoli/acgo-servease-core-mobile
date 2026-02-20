@@ -1,12 +1,14 @@
 import { View, Text, ScrollView, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
 
 export default function PrivacyPolicy() {
 	const router = useRouter();
 
 	return (
 		<View className="flex-1 bg-white">
+			<StatusBar style="dark" />
 			<SafeAreaView className="flex-1" edges={['top']}>
 				<View className="flex-row items-center justify-between px-4 py-4 border-b border-gray-200">
 					<Text className="text-xl font-bold text-gray-900">Privacy Policy</Text>
