@@ -139,7 +139,16 @@ export default function ServiceDetail() {
 							</Text>
 						</View>
 					</View>
-					<Pressable className="bg-primary rounded-xl py-4 items-center">
+					<Pressable
+						className="bg-primary rounded-xl py-4 items-center"
+						onPress={() => {
+							const id = Array.isArray(params.id) ? params.id[0] : params.id;
+							router.push({
+								pathname: '/user/customer/service/[id]/checkout',
+								params: { id: id ?? service.id, service: JSON.stringify(service) },
+							});
+						}}
+					>
 						<Text className="text-white font-semibold text-base">BOOK THIS SERVICE</Text>
 					</Pressable>
 				</View>

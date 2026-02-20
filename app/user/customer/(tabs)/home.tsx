@@ -13,6 +13,7 @@ import { ServicesModal } from '@/components/modules/services/ServicesModal';
 import { useServiceCategories, serviceCategoriesQueryKey } from '@/hooks/useServiceCategories';
 import { useCustomerServices, customerServicesQueryKey } from '@/hooks/useCustomerServices';
 import { useCustomerServiceProviders, customerServiceProvidersQueryKey } from '@/hooks/useCustomerServiceProviders';
+import { useAuthProfile } from '@/hooks/useAuthProfile';
 import { customerServiceProvidersService } from '@/services/customer-service-providers.service';
 import { customerServicesService } from '@/services/customer-services.service';
 import { ServiceCategory } from '@/types/service';
@@ -29,6 +30,7 @@ export default function Home() {
 	const { data: categories = [], isLoading: categoriesLoading } = useServiceCategories();
 	const { data: servicesNearYou = [], isLoading: servicesNearYouLoading } = useCustomerServices({ limit: 10 });
 	const { data: serviceProviders = [], isLoading: serviceProvidersLoading } = useCustomerServiceProviders();
+	useAuthProfile();
 	const { data: modalProviders = [], isLoading: modalProvidersLoading } = useQuery({
 		queryKey: [...customerServiceProvidersQueryKey, 'modal', 50],
 		queryFn: () => customerServiceProvidersService.fetchAll({ limit: 50 }),
