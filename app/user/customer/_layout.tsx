@@ -15,6 +15,7 @@ export default function CustomerLayout() {
 			<Stack.Screen name="services" options={{ headerShown: false }} />
 			<Stack.Screen name="service/[id]" options={{ headerShown: false }} />
 			<Stack.Screen name="service/[id]/checkout" options={{ headerShown: false }} />
+			<Stack.Screen name="support" options={{ headerShown: false }} />
 		</Stack>
 	);
 }

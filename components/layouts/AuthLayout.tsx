@@ -3,6 +3,7 @@ import { View, Text, ImageBackground, ScrollView } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { SPLASH_BG } from '@/assets';
+import { BUILD_VERSION } from '@/constants/app';
 
 interface AuthLayoutProps {
 	children: ReactNode;
@@ -29,7 +30,7 @@ export function AuthLayout({ children, scrollable = true }: AuthLayoutProps) {
 			</SafeAreaView>
 
 			<Text className="text-white text-sm absolute right-5" style={{ top: insets.top }}>
-				v0.1.0.0-alpha
+				{BUILD_VERSION}
 			</Text>
 		</View>
 	);

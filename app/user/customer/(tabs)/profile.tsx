@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { UserLayout } from '@/components/layouts/UserLayout';
+import { BUILD_VERSION } from '@/constants/app';
 import { useAuthProfile } from '@/hooks/useAuthProfile';
 import { authTokenStorage } from '@/services/auth-token-storage';
 
@@ -151,6 +152,19 @@ export default function Profile() {
 						) : null}
 
 						<View className="mt-8">
+							<Text className="text-lg font-semibold text-gray-900 mb-2">General</Text>
+							<View className="bg-white rounded-lg">
+								<SettingsItem icon="help-circle-outline" label="FAQs" onPress={() => {}} />
+								<SettingsItem
+									icon="headset-outline"
+									label="Customer Support"
+									onPress={() => router.push('/user/customer/support')}
+								/>
+								<SettingsItem icon="flag-outline" label="Report a Problem" onPress={() => {}} />
+							</View>
+						</View>
+
+						<View className="mt-8">
 							<Text className="text-lg font-semibold text-gray-900 mb-2">Settings</Text>
 							<View className="bg-white rounded-lg">
 								<SettingsItem
@@ -177,10 +191,12 @@ export default function Profile() {
 						<View className="mt-8 mb-6">
 							<Pressable
 								onPress={handleSignout}
-								className="bg-secondary w-full py-4 items-center justify-center active:opacity-90 rounded-xl"
+								className="w-full py-4 items-center justify-center active:opacity-90 rounded-xl border border-secondary"
 							>
-								<Text className="text-white text-base font-semibold">SIGNOUT OF YOUR ACCOUNT</Text>
+								<Text className="text-secondary text-base font-semibold">SIGN OUT</Text>
 							</Pressable>
+
+							<Text className="text-center text-gray-500 mt-5">Build version: {BUILD_VERSION}</Text>
 						</View>
 					</View>
 				</ScrollView>

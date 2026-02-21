@@ -4,6 +4,8 @@ import { View, Image, ImageBackground, Text, InteractionManager } from 'react-na
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as SplashScreen from 'expo-splash-screen';
 import { BRAND_LOGO, SPLASH_BG } from '@/assets';
+import { BUILD_VERSION } from '@/constants/app';
+import { authProfileService } from '@/services/auth-profile.service';
 import { authTokenStorage } from '@/services/auth-token-storage';
 
 const IS_DEV: boolean = false;
@@ -18,17 +20,12 @@ export default function () {
 			if (IS_DEV) {
 				router.push('/user/customer/(tabs)/home');
 			} else {
-				// router.push('/auth/signin');
-
 				setTimeout(() => {
-					authTokenStorage.getAccessToken().then((token) => {
-						if (token) {
-							router.replace('/user/customer');
-						} else {
-							router.push('/auth/signin');
-						}
-					});
-				}, 2000);
+					authProfileService
+						.getProfile()
+						.then(() => router.replace('/user/customer'))
+						.catch(() => router.push('/auth/signin'));
+				}, 1400);
 			}
 		});
 		// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -66,7 +63,7 @@ export default function () {
 					</View>
 
 					<Text className="text-sm text-white absolute left-5" style={{ bottom: insets.bottom }}>
-						v0.1.0.0-alpha
+						{BUILD_VERSION}
 					</Text>
 				</SafeAreaView>
 			</View>

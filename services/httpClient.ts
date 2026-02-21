@@ -1,6 +1,13 @@
 import axios, { type AxiosRequestConfig } from 'axios';
 import { authTokenStorage } from './auth-token-storage';
 
+/** Called when any request returns 401; app should clear UI state and redirect to sign-in. */
+let onUnauthorized: (() => void) | null = null;
+
+export function setOnUnauthorized(callback: (() => void) | null): void {
+	onUnauthorized = callback;
+}
+
 const baseURL = process.env.EXPO_PUBLIC_API_URL ?? '';
 
 /**
@@ -70,14 +77,34 @@ instance.interceptors.request.use(async (config) => {
 	return config;
 });
 
-instance.interceptors.response.use(undefined, (err: unknown) => {
+instance.interceptors.response.use(undefined, async (err: unknown) => {
+	const status = (err as { response?: { status?: number } }).response?.status ?? 0;
+
+	if (status === 401) {
+		await authTokenStorage.clearTokens();
+		onUnauthorized?.();
+	}
+
 	const rawMsg =
 		(err as { response?: { data?: { message?: string } }; message?: string }).response?.data?.message ??
 		(err as { message?: string }).message ??
 		'Request failed';
-	const isTimeout = (err as { code?: string }).code === 'ECONNABORTED' || /timeout/i.test(String(rawMsg ?? ''));
-	const msg = isTimeout ? 'The request took too long. Please check your connection and try again.' : rawMsg;
-	const status = (err as { response?: { status?: number } }).response?.status ?? 0;
+	const code = (err as { code?: string }).code;
+	const isTimeout = code === 'ECONNABORTED' || /timeout/i.test(String(rawMsg ?? ''));
+	const isNetworkError =
+		code === 'ERR_NETWORK' ||
+		/network error/i.test(String(rawMsg ?? '')) ||
+		/connection refused/i.test(String(rawMsg ?? ''));
+	let msg: string;
+	if (isTimeout) {
+		msg = 'The request took too long. Please check your connection and try again.';
+	} else if (isNetworkError) {
+		msg =
+			'Cannot reach the server. Check that the backend is running (e.g. on port 3000), your device is on the same network as the server, and EXPO_PUBLIC_API_URL in .env is correct.';
+		console.error('[httpClient] Network error. baseURL:', baseURL || '(empty)');
+	} else {
+		msg = rawMsg;
+	}
 	const data = (err as { response?: { data?: unknown } }).response?.data;
 	console.error('[httpClient] Error response message:', msg);
 	throw createHttpError(msg, status, data);
@@ -118,24 +145,25 @@ function toResponse<T>(res: { data: T; status: number } | undefined): HttpClient
 }
 
 export const httpClient = {
-	/**
-	 * GET with optional cache TTL. Pass cacheTtlSeconds (e.g. 3600 for 1hr) to send cache headers
-	 * so the backend can return cached responses or set response Cache-Control.
-	 */
-	get<T>(path: string, config?: AxiosRequestConfig | GetWithCacheOptions): Promise<HttpClientResponse<T>> {
+	async get<T>(path: string, config?: AxiosRequestConfig | GetWithCacheOptions): Promise<HttpClientResponse<T>> {
 		const merged = mergeGetConfig(config as GetWithCacheOptions | undefined);
-		return instance.get<T>(path, merged).then((res) => toResponse(res));
+		const res = await instance.get<T>(path, merged);
+		return toResponse(res);
 	},
-	post<T>(path: string, body?: unknown, config?: AxiosRequestConfig): Promise<HttpClientResponse<T>> {
-		return instance.post<T>(path, body, config).then((res) => toResponse(res));
+	async post<T>(path: string, body?: unknown, config?: AxiosRequestConfig): Promise<HttpClientResponse<T>> {
+		const res = await instance.post<T>(path, body, config);
+		return toResponse(res);
 	},
-	put<T>(path: string, body?: unknown, config?: AxiosRequestConfig): Promise<HttpClientResponse<T>> {
-		return instance.put<T>(path, body, config).then((res) => toResponse(res));
+	async put<T>(path: string, body?: unknown, config?: AxiosRequestConfig): Promise<HttpClientResponse<T>> {
+		const res = await instance.put<T>(path, body, config);
+		return toResponse(res);
 	},
-	patch<T>(path: string, body?: unknown, config?: AxiosRequestConfig): Promise<HttpClientResponse<T>> {
-		return instance.patch<T>(path, body, config).then((res) => toResponse(res));
+	async patch<T>(path: string, body?: unknown, config?: AxiosRequestConfig): Promise<HttpClientResponse<T>> {
+		const res = await instance.patch<T>(path, body, config);
+		return toResponse(res);
 	},
-	delete<T>(path: string, config?: AxiosRequestConfig): Promise<HttpClientResponse<T>> {
-		return instance.delete<T>(path, config).then((res) => toResponse(res));
+	async delete<T>(path: string, config?: AxiosRequestConfig): Promise<HttpClientResponse<T>> {
+		const res = await instance.delete<T>(path, config);
+		return toResponse(res);
 	},
 };

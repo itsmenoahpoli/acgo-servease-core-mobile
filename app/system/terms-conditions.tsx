@@ -10,7 +10,7 @@ export default function TermsConditions() {
 		<View className="flex-1 bg-white">
 			<StatusBar style="dark" />
 			<SafeAreaView className="flex-1">
-				<View className="flex-row items-center justify-between px-4 border-b border-gray-200">
+				<View className="flex-row items-center justify-between px-4 pb-4 border-b border-gray-200">
 					<Text className="text-xl font-bold text-gray-900">Terms & Conditions</Text>
 					<Pressable onPress={() => router.back()} className="w-8 h-8 items-center justify-center">
 						<Text className="text-2xl text-gray-600">×</Text>
